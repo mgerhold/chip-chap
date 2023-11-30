@@ -4,8 +4,8 @@
 #include "backends/imgui_impl_sdl2.h"
 #include "event.hpp"
 #include "imgui.h"
-#include "renderer.hpp"
 #include <format>
+#include <glad/glad.h>
 
 WindowError::WindowError(std::string_view const message)
     : std::runtime_error{ std::format("failed to create window: {}", message) } { }
@@ -15,6 +15,10 @@ Window::Window(int const width, int const height, std::string const& title) {
         throw WindowError{ std::format("could not initialize SDL ('{}')", SDL_GetError()) };
     }
     SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl");
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3); // Set major version of OpenGL
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0); // Set minor version of OpenGL
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
     m_window = SDL_CreateWindow(
             title.c_str(),
             SDL_WINDOWPOS_CENTERED,
@@ -28,21 +32,21 @@ Window::Window(int const width, int const height, std::string const& title) {
         throw WindowError{ SDL_GetError() };
     }
 
-    m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED);
-    if (m_renderer == nullptr) {
-        SDL_DestroyWindow(m_window);
-        SDL_Quit();
-        throw WindowError{ std::format("could not create renderer ('{}')", SDL_GetError()) };
-    }
-
     m_gl_context = SDL_GL_CreateContext(m_window);
     if (m_gl_context == nullptr) {
         SDL_Quit();
         SDL_DestroyWindow(m_window);
         throw WindowError{ std::format("failed to create OpenGL context ('{}')", SDL_GetError()) };
     }
-    SDL_GL_MakeCurrent(m_window, m_gl_context);
-    //SDL_GL_SetSwapInterval(1);
+
+    SDL_GL_SetSwapInterval(0); // no V-Sync
+
+    if (!gladLoadGLLoader(SDL_GL_GetProcAddress)) {
+        SDL_GL_DeleteContext(m_gl_context);
+        SDL_Quit();
+        SDL_DestroyWindow(m_window);
+        throw WindowError{ "failed to initialize GLAD" };
+    }
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -80,16 +84,11 @@ void Window::update() {
     return result;
 }
 
-[[nodiscard]] Renderer Window::renderer() const {
-    return Renderer{ m_renderer };
-}
-
 Window::~Window() {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
     ImGui::DestroyContext();
     SDL_GL_DeleteContext(m_gl_context);
-    SDL_DestroyRenderer(m_renderer);
     SDL_DestroyWindow(m_window);
     SDL_Quit();
 }

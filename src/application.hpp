@@ -6,6 +6,8 @@ class Application {
 private:
     Window m_window;
     bool m_running = true;
+    double m_elapsed_seconds = 0.0;
+    double m_delta_seconds = 0.0;
 
 public:
     Application();
@@ -18,8 +20,9 @@ public:
 
     void run();
 protected:
-    virtual void update(double delta_seconds) = 0;
-    virtual void render(Renderer& renderer) const = 0;
+    virtual void update() = 0;
     virtual void imgui_render() const = 0;
+    [[nodiscard]] double elapsed_seconds() const;
+    [[nodiscard]] double delta_seconds() const;
     void quit();
 };

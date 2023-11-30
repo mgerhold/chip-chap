@@ -1,23 +1,21 @@
 {
-  "name": "chip-chap",
-  "version": "0.1",
-  "dependencies": [
-    {
-      "name": "sdl2",
-      "version>=": "2.28.2"
-    },
-    {
-      "name": "tl-expected",
-      "version>=": "1.1.0"
-    },
-    {
-      "name": "tl-optional",
-      "version>=": "2021-05-02"
-    },
-    {
-      "name": "ms-gsl",
-      "version>=": "4.0.0"
-    }
-  ],
-  "builtin-baseline": "4a600e9fea71bd7872080cbb716797e04d30e6d3"
+  "name" : "chip-chap",
+  "version" : "0.1",
+  "dependencies" : [ {
+    "name" : "sdl2",
+    "version>=" : "2.28.2"
+  }, {
+    "name" : "tl-expected",
+    "version>=" : "1.1.0"
+  }, {
+    "name" : "tl-optional",
+    "version>=" : "2021-05-02"
+  }, {
+    "name" : "ms-gsl",
+    "version>=" : "4.0.0"
+  }, {
+    "name" : "glad",
+    "version>=" : "0.1.36"
+  } ],
+  "builtin-baseline" : "4a600e9fea71bd7872080cbb716797e04d30e6d3"
 }
