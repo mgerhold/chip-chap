@@ -49,7 +49,7 @@ protected:
         auto const brightness1 = static_cast<u8>(std::round((std::sin(elapsed_seconds()) + 1.0) * 255.0 / 2.0));
         auto const brightness2 = static_cast<u8>(std::round((std::cos(elapsed_seconds() * 0.8) + 1.0) * 255.0 / 2.0));
         auto const brightness3 = static_cast<u8>(std::round((std::sin(elapsed_seconds() * 1.3) + 1.0) * 255.0 / 2.0));
-        auto const texture = std::array<u8, 16>{
+        auto const texture = std::array{
             brightness0, brightness0, brightness0, 255, brightness1, 0, brightness1, 255,
             brightness2, brightness2, 0,           255, 0,           0, brightness3, 255,
         };
