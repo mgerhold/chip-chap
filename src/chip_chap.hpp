@@ -12,7 +12,7 @@ private:
     double m_delta_display_value = 0.0;
 
 protected:
-    void update([[maybe_unused]] double delta_seconds) override {
+    void update(double const delta_seconds) override {
         m_deltas.push_back(delta_seconds);
         auto const sum = std::accumulate(m_deltas.cbegin(), m_deltas.cend(), 0.0);
         if (sum >= 1.0) {
