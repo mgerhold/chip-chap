@@ -11,7 +11,9 @@ add_executable(chip_chap main.cpp
         key_code.hpp
         visitor.hpp
         application.cpp
-        application.hpp)
+        application.hpp
+        chip_chap.hpp
+)
 
 target_link_libraries(chip_chap PRIVATE project_options)
 

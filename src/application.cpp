@@ -4,11 +4,13 @@
 #include <SDL.h>
 #include <backends/imgui_impl_opengl3.h>
 #include <backends/imgui_impl_sdl2.h>
+#include <chrono>
 
 Application::Application() : m_window{ 800, 600, "MyWindow" } { }
 
 void Application::run() {
-    auto last = SDL_GetTicks();
+    using Clock = std::chrono::steady_clock;
+    auto last = Clock::now();
     auto renderer = m_window.renderer();
     while (m_running) {
         m_window.update();
@@ -20,18 +22,17 @@ void Application::run() {
                     [&](event::KeyUp const&) {}
             );
         }
-        auto const current = SDL_GetTicks();
-        if (current == last) {
-            continue;
-        }
-        auto const delta_seconds = static_cast<double>(current - last) / 1000.0;
+        auto const current = Clock::now();
+        auto const elapsed = current - last;
+        auto const delta_seconds =
+                static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count()) / 1000000.0;
         update(delta_seconds);
         render(renderer);
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplSDL2_NewFrame();
         ImGui::NewFrame();
-        ImGui::ShowDemoWindow();
+        imgui_render();
         ImGui::Render();
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

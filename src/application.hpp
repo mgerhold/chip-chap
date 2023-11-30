@@ -20,5 +20,6 @@ public:
 protected:
     virtual void update(double delta_seconds) = 0;
     virtual void render(Renderer& renderer) const = 0;
+    virtual void imgui_render() const = 0;
     void quit();
 };

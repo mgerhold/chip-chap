@@ -5,7 +5,6 @@
 #include "event.hpp"
 #include "imgui.h"
 #include "renderer.hpp"
-
 #include <format>
 
 WindowError::WindowError(std::string_view const message)
@@ -43,7 +42,7 @@ Window::Window(int const width, int const height, std::string const& title) {
         throw WindowError{ std::format("failed to create OpenGL context ('{}')", SDL_GetError()) };
     }
     SDL_GL_MakeCurrent(m_window, m_gl_context);
-    SDL_GL_SetSwapInterval(1);
+    //SDL_GL_SetSwapInterval(1);
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
