@@ -1,7 +1,7 @@
 #pragma once
 
+#include "color.hpp"
 
-struct Color;
 struct SDL_Renderer;
 
 class Renderer final {
@@ -18,9 +18,14 @@ public:
     Renderer& operator=(Renderer const& other) = delete;
     Renderer& operator=(Renderer&& other) noexcept = delete;
 
-    void clear(Color color) const;
-    void swap() const;
+    Renderer& clear(Color color);
+    void swap();
+
+    // todo: make private and friend
+    [[nodiscard]] SDL_Renderer* sdl_renderer() const {
+        return m_renderer;
+    }
 
 private:
-    void set_color(Color color) const;
+    void set_color(Color color);
 };

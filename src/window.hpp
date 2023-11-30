@@ -11,6 +11,7 @@
 
 struct SDL_Window;
 struct SDL_Renderer;
+class Renderer;
 
 class WindowError final : public std::runtime_error {
 public:
@@ -21,6 +22,7 @@ class Window final {
 private:
     SDL_Window* m_window;
     SDL_Renderer* m_renderer;
+    SDL_GLContext m_gl_context;
     std::deque<event::Event> m_events;
 
 public:
@@ -31,5 +33,11 @@ public:
     Window& operator=(Window&& other) noexcept = delete;
     void update();
     [[nodiscard]] Optional<event::Event> next_event();
+    [[nodiscard]] Renderer renderer() const;
     ~Window();
+
+    // todo: make private + friend
+    [[nodiscard]] SDL_Window* sdl_window() const {
+        return m_window;
+    }
 };
