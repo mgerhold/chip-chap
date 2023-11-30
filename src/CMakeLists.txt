@@ -9,7 +9,9 @@ add_executable(chip_chap main.cpp
         types.hpp
         event.hpp
         key_code.hpp
-        visitor.hpp)
+        visitor.hpp
+        application.cpp
+        application.hpp)
 
 target_link_libraries(chip_chap PRIVATE project_options)
 
@@ -22,5 +24,3 @@ target_link_libraries(chip_chap
 target_link_libraries(chip_chap PRIVATE tl::expected)
 target_link_libraries(chip_chap PRIVATE tl::optional)
 target_link_system_libraries(chip_chap PRIVATE imgui)
-
-# target_link_system_libraries(chip_chap PRIVATE imgui SDL2::SDL2)

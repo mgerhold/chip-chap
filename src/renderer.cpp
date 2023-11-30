@@ -9,7 +9,7 @@ Renderer& Renderer::clear(Color const color) {
     return *this;
 }
 
-void Renderer::swap() {
+void Renderer::flush() {
     SDL_RenderFlush(m_renderer);
 }
 

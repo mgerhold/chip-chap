@@ -19,13 +19,12 @@ public:
     Renderer& operator=(Renderer&& other) noexcept = delete;
 
     Renderer& clear(Color color);
-    void swap();
-
-    // todo: make private and friend
-    [[nodiscard]] SDL_Renderer* sdl_renderer() const {
-        return m_renderer;
-    }
+    void flush();
 
 private:
     void set_color(Color color);
+
+    [[nodiscard]] SDL_Renderer* sdl_renderer() const {
+        return m_renderer;
+    }
 };

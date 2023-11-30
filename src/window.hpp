@@ -19,6 +19,7 @@ public:
 };
 
 class Window final {
+    friend class Application;
 private:
     SDL_Window* m_window;
     SDL_Renderer* m_renderer;
@@ -36,7 +37,7 @@ public:
     [[nodiscard]] Renderer renderer() const;
     ~Window();
 
-    // todo: make private + friend
+private:
     [[nodiscard]] SDL_Window* sdl_window() const {
         return m_window;
     }
