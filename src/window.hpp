@@ -1,12 +1,12 @@
 #pragma once
 
 #include "event.hpp"
-#include "types.hpp"
 #include <deque>
 #include <memory>
 #include <stdexcept>
 #include <string>
 #include <string_view>
+#include <common/types.hpp>
 #include <vector>
 
 struct SDL_Window;
@@ -18,6 +18,7 @@ public:
 
 class Window final {
     friend class Application;
+
 private:
     SDL_Window* m_window;
     SDL_GLContext m_gl_context;

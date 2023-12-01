@@ -1,7 +1,7 @@
 #pragma once
 
 #include "key_code.hpp"
-#include "types.hpp"
+#include <common/types.hpp>
 #include <variant>
 
 namespace event {

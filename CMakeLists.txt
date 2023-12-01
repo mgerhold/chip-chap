@@ -13,6 +13,8 @@ endif ()
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+option(BUILD_TESTS "Build the unit tests" ON)
+
 # don't allow the usage of compiler-specific extensions to improve portability
 set(CMAKE_CXX_EXTENSIONS OFF)
 
