@@ -819,3 +819,32 @@ TEST_F(DefaultState, Store) {
         ASSERT_EQ(emulator->address_register(), 0x50 + bound + 1);
     }
 }
+
+// FX65: Fill registers V0 to VX inclusive with the values stored in memory starting at address I
+//       I is set to I + X + 1 after operation
+TEST_F(DefaultState, Load) {
+    for (Address address = 0; address < 16; ++address) {
+        emulator->write(address + 0x50, random_byte());
+    }
+
+    auto instruction_address = Address{ 0x200 };
+    for (u8 bound = 0x0; bound <= 0xF; ++bound) {
+        write_opcode(0xA050, instruction_address); // set address register to 0x50
+        instruction_address += 2;
+
+        auto const opcode = 0xF065 | (bound << 8);
+        write_opcode(opcode, instruction_address);
+        instruction_address += 2;
+    }
+
+    for (u8 bound = 0x0; bound <= 0xF; ++bound) {
+        emulator->execute_next_instruction();
+        ASSERT_EQ(emulator->address_register(), 0x50);
+        emulator->execute_next_instruction();
+        for (u8 register_ = 0; register_ <= 0xF; ++register_) {
+            auto const expected = (register_ <= bound ? emulator->read(0x50 + register_) : 0);
+            ASSERT_EQ(emulator->registers().at(register_), expected);
+        }
+        ASSERT_EQ(emulator->address_register(), 0x50 + bound + 1);
+    }
+}

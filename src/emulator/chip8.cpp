@@ -328,6 +328,16 @@ namespace emulator {
                     advance();
                     break;
                 }
+                if ((opcode & 0xFF) == 0x65) {
+                    // FX65: Fill registers V0 to VX inclusive with the values stored in memory starting at address I
+                    //       I is set to I + X + 1 after operation
+                    for (u8 i = 0; i <= x; ++i) {
+                        m_registers.at(i) = read(address_register() + i);
+                    }
+                    m_address_register += x + 1;
+                    advance();
+                    break;
+                }
                 m_halted = true;
                 break;
             default:
