@@ -749,3 +749,31 @@ TEST_F(DefaultState, SetAddressRegisterToFontGlyph) {
         ASSERT_EQ(emulator->instruction_pointer(), 0x200);
     }
 }
+
+// FX33: Store the binary-coded decimal equivalent of the value stored in register VX at addresses I, I+1, and I+2
+TEST_F(DefaultState, BinaryCodedDecimal) {
+    write_opcode(0xA050, 0x200); // set address register to 0x50 = 5 * 16 (behind the font glyphs)
+    emulator->execute_next_instruction();
+    ASSERT_EQ(emulator->address_register(), 5 * 16);
+    for (u8 register_ = 0x0; register_ <= 0xF; ++register_) {
+        Address instruction_address = 0x202;
+        for (int value = 0; value <= 255; ++value) {
+            write_set_register_opcode(register_, gsl::narrow<u8>(value), instruction_address);
+            instruction_address += 2;
+            auto const opcode = 0xF033 | (register_ << 8);
+            write_opcode(opcode, instruction_address);
+            instruction_address += 2;
+        }
+        write_opcode(0x1202, instruction_address); // jump back to 0x202
+
+        for (int value = 0; value <= 255; ++value) {
+            emulator->execute_next_instruction();
+            ASSERT_EQ(emulator->registers().at(register_), value);
+            emulator->execute_next_instruction();
+            ASSERT_EQ(emulator->read(emulator->address_register() + 2), value % 10);
+            ASSERT_EQ(emulator->read(emulator->address_register() + 1), (value / 10) % 10);
+            ASSERT_EQ(emulator->read(emulator->address_register() + 0), value / 100);
+        }
+        emulator->execute_next_instruction(); // for the jump
+    }
+}

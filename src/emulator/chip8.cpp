@@ -304,6 +304,20 @@ namespace emulator {
                     advance();
                     break;
                 }
+                if ((opcode & 0xFF) == 0x33) {
+                    // FX33: Store the binary-coded decimal equivalent of the value stored in register VX at addresses I, I+1, and I+2
+                    auto const value = registers().at(x);
+                    auto const digits = std::array<u8, 3>{
+                        gsl::narrow<u8>(value / 100),
+                        gsl::narrow<u8>(value / 10 % 10),
+                        gsl::narrow<u8>(value % 10),
+                    };
+                    for (Address i = 0; i < gsl::narrow<Address>(digits.size()); ++i) {
+                        write(address_register() + i, digits.at(i));
+                    }
+                    advance();
+                    break;
+                }
                 m_halted = true;
                 break;
             default:
