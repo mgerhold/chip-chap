@@ -1,9 +1,9 @@
 #pragma once
 
+#include <..\..\src\emulator\include\chip8\basic_screen.hpp>
 #include <array>
-#include <chip8/screen.hpp>
 
-class MockScreen final : public emulator::Screen {
+class MockScreen final : public emulator::BasicScreen {
     std::array<bool, 64 * 32> m_buffer = {};
 
 public:

@@ -4,9 +4,9 @@
 
 namespace emulator {
 
-    class Screen {
+    class BasicScreen {
     public:
-        virtual ~Screen() = default;
+        virtual ~BasicScreen() = default;
 
         virtual bool set_pixel(u8 x, u8 y, bool is_set) = 0;
         [[nodiscard]] virtual bool get_pixel(u8 x, u8 y) const = 0;

@@ -1,8 +1,8 @@
 #pragma once
 
+#include "basic_screen.hpp"
 #include "input_source.hpp"
 #include "time_source.hpp"
-#include "screen.hpp"
 #include <array>
 #include <common/types.hpp>
 #include <random>
@@ -30,7 +30,7 @@ namespace emulator {
         bool m_halted = false;
         std::mt19937 m_random_generator;
         std::uniform_int_distribution<int> m_random_distribution;
-        Screen* m_screen;
+        BasicScreen* m_screen;
         InputSource* m_input_source;
         TimeSource* m_time_source;
         double m_start_time;
@@ -39,7 +39,7 @@ namespace emulator {
         static constexpr auto display_height = 32;
 
     public:
-        explicit Chip8(Screen& screen, InputSource& input_source, TimeSource& time_source, usize memory_size = 4 * 1024);
+        explicit Chip8(BasicScreen& screen, InputSource& input_source, TimeSource& time_source, usize memory_size = 4 * 1024);
 
         void execute_next_instruction();
 

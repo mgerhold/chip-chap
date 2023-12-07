@@ -3,7 +3,7 @@ add_library(emulator STATIC
         chip8.cpp
         include/chip8/time_source.hpp
         include/chip8/input_source.hpp
-        include/chip8/screen.hpp
+        include/chip8/basic_screen.hpp
 )
 
 target_link_libraries(emulator
