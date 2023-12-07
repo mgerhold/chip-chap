@@ -35,8 +35,8 @@ namespace emulator {
         auto const y = static_cast<u8>((opcode & 0xF0) >> 4);
         switch (opcode_id) {
             case 0: {
-                if (opcode == 0x00E9) {
-                    // 00E9: Clear the screen
+                if (opcode == 0x00E0) {
+                    // 00E0: Clear the screen
                     m_screen->clear();
                     break;
                 }

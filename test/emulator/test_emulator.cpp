@@ -126,7 +126,7 @@ TEST_F(DefaultState, Jump) {
     ASSERT_EQ(emulator->instruction_pointer(), 0x250);
 }
 
-// 00E9: Clear the screen
+// 00E0: Clear the screen
 TEST_F(DefaultState, ClearScreen) {
     screen.set_pixel(10, 10, true);
 
@@ -140,7 +140,7 @@ TEST_F(DefaultState, ClearScreen) {
     }
     ASSERT_TRUE(any_pixel_set);
 
-    write_opcode(0x00E9, 0x200);
+    write_opcode(0x00E0, 0x200);
     emulator->execute_next_instruction();
 
     any_pixel_set = false;
