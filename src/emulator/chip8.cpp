@@ -3,7 +3,7 @@
 #include <gsl/gsl>
 
 namespace emulator {
-    Chip8::Chip8(BasicScreen& screen, InputSource& input_source, TimeSource& time_source, usize const memory_size)
+    Chip8::Chip8(BasicScreen& screen, BasicInputSource& input_source, TimeSource& time_source, usize const memory_size)
         : m_random_generator{ std::random_device{}() },
           m_random_distribution{ 0, std::numeric_limits<u8>::max() },
           m_screen{ &screen },

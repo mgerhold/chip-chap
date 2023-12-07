@@ -23,9 +23,9 @@ namespace emulator {
         F = 0xF,
     };
 
-    class InputSource {
+    class BasicInputSource {
     public:
-        virtual ~InputSource() = default;
+        virtual ~BasicInputSource() = default;
 
         [[nodiscard]] virtual Key await_keypress() = 0;
         [[nodiscard]] virtual bool is_key_pressed(Key key) = 0;

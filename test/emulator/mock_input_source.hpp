@@ -1,10 +1,10 @@
 #pragma once
 
+#include <..\..\src\emulator\include\chip8\basic_input_source.hpp>
 #include <cassert>
-#include <chip8/input_source.hpp>
 #include <unordered_set>
 
-class MockInputSource final : public emulator::InputSource {
+class MockInputSource final : public emulator::BasicInputSource {
 public:
     std::unordered_set<emulator::Key> pressed_keys;
     std::vector<emulator::Key> to_be_pressed;
