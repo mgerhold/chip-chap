@@ -324,7 +324,7 @@ namespace emulator {
                     for (u8 i = 0; i <= x; ++i) {
                         write(address_register() + i, registers().at(i));
                     }
-                    m_address_register += x + 1;
+                    m_address_register += gsl::narrow<u16>(x + 1);
                     advance();
                     break;
                 }
@@ -334,7 +334,7 @@ namespace emulator {
                     for (u8 i = 0; i <= x; ++i) {
                         m_registers.at(i) = read(address_register() + i);
                     }
-                    m_address_register += x + 1;
+                    m_address_register += gsl::narrow<u16>(x + 1);
                     advance();
                     break;
                 }

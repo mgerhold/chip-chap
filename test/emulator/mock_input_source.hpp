@@ -1,7 +1,7 @@
 #pragma once
 
-#include <..\..\src\emulator\include\chip8\basic_input_source.hpp>
 #include <cassert>
+#include <chip8/basic_input_source.hpp>
 #include <unordered_set>
 
 class MockInputSource final : public emulator::BasicInputSource {
