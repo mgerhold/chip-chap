@@ -8,6 +8,12 @@ add_executable(chip_chap main.cpp
         application.cpp
         application.hpp
         chip_chap.hpp
+        screen.cpp
+        screen.hpp
+        input_source.cpp
+        input_source.hpp
+        time_source.cpp
+        time_source.hpp
 )
 
 target_link_libraries(chip_chap

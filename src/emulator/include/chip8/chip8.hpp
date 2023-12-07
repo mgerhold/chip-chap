@@ -2,7 +2,7 @@
 
 #include "basic_input_source.hpp"
 #include "basic_screen.hpp"
-#include "time_source.hpp"
+#include "basic_time_source.hpp"
 #include <array>
 #include <common/types.hpp>
 #include <random>
@@ -32,14 +32,17 @@ namespace emulator {
         std::uniform_int_distribution<int> m_random_distribution;
         BasicScreen* m_screen;
         BasicInputSource* m_input_source;
-        TimeSource* m_time_source;
+        BasicTimeSource* m_time_source;
         double m_start_time;
 
         static constexpr auto display_width = 64;
         static constexpr auto display_height = 32;
 
     public:
-        explicit Chip8(BasicScreen& screen, BasicInputSource& input_source, TimeSource& time_source, usize memory_size = 4 * 1024);
+        Chip8(BasicScreen& screen,
+              BasicInputSource& input_source,
+              BasicTimeSource& time_source,
+              usize memory_size = 4 * 1024);
 
         void execute_next_instruction();
 

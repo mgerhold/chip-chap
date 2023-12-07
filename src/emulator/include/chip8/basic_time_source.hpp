@@ -2,9 +2,9 @@
 
 namespace emulator {
 
-    class TimeSource {
+    class BasicTimeSource {
     public:
-        virtual ~TimeSource() = default;
+        virtual ~BasicTimeSource() = default;
 
         [[nodiscard]] virtual double elapsed_seconds() = 0;
     };
