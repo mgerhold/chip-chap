@@ -85,6 +85,10 @@ namespace emulator {
             return m_instruction_pointer;
         }
 
+        [[nodiscard]] bool is_halted() const {
+            return m_halted;
+        }
+
     private:
         void advance();
     };

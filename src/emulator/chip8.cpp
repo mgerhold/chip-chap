@@ -298,6 +298,12 @@ namespace emulator {
                     advance();
                     break;
                 }
+                if ((opcode & 0xFF) == 0x29) {
+                    // FX29: Set I to the memory address of the sprite data corresponding to the hexadecimal digit stored in register VX
+                    m_address_register = 5 * m_registers.at(x);
+                    advance();
+                    break;
+                }
                 m_halted = true;
                 break;
             default:

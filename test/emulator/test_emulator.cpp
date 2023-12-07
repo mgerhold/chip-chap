@@ -9,6 +9,25 @@
 
 using Address = emulator::Chip8::Address;
 
+static constexpr auto font_glyphs = std::array<u8, 16 * 5>{
+    0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
+    0x20, 0x60, 0x20, 0x20, 0x70, // 1
+    0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
+    0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
+    0x90, 0x90, 0xF0, 0x10, 0x10, // 4
+    0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
+    0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
+    0xF0, 0x10, 0x20, 0x40, 0x40, // 7
+    0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
+    0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
+    0xF0, 0x90, 0xF0, 0x90, 0x90, // A
+    0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
+    0xF0, 0x80, 0x80, 0x80, 0xF0, // C
+    0xE0, 0x90, 0x90, 0x90, 0xE0, // D
+    0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
+    0xF0, 0x80, 0xF0, 0x80, 0x80, // F
+};
+
 class DefaultState : public ::testing::Test {
 protected:
     MockScreen screen;
@@ -85,24 +104,6 @@ TEST_F(DefaultState, CorrectDefaultState) {
     }
     ASSERT_EQ(emulator->address_register(), 0);
     ASSERT_EQ(emulator->memory().size(), 4096);
-    static constexpr auto font_glyphs = std::array<u8, 16 * 5>{
-        0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
-        0x20, 0x60, 0x20, 0x20, 0x70, // 1
-        0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
-        0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
-        0x90, 0x90, 0xF0, 0x10, 0x10, // 4
-        0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
-        0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
-        0xF0, 0x10, 0x20, 0x40, 0x40, // 7
-        0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
-        0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
-        0xF0, 0x90, 0xF0, 0x90, 0x90, // A
-        0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
-        0xF0, 0x80, 0x80, 0x80, 0xF0, // C
-        0xE0, 0x90, 0x90, 0x90, 0xE0, // D
-        0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
-        0xF0, 0x80, 0xF0, 0x80, 0x80, // F
-    };
     for (Address address = 0; address < gsl::narrow<Address>(emulator->memory().size()); ++address) {
         ASSERT_EQ(emulator->read(address), address < 16 * 5 ? font_glyphs.at(address) : 0);
     }
@@ -717,4 +718,34 @@ TEST_F(DefaultState, AddRegisterToAddressRegister) {
     emulator->execute_next_instruction();
 
     ASSERT_EQ(emulator->address_register(), 42);
+}
+
+// FX29: Set I to the memory address of the sprite data corresponding to the hexadecimal digit stored in register VX
+TEST_F(DefaultState, SetAddressRegisterToFontGlyph) {
+    for (u8 register_ = 0x0; register_ <= 0xF; ++register_) {
+        Address instruction_address = 0x200;
+        auto const opcode = 0xF029 | (register_ << 8);
+        for (u8 glyph = 0x0; glyph <= 0xF; ++glyph) {
+            write_set_register_opcode(register_, glyph, instruction_address);
+            instruction_address += 2;
+            write_opcode(opcode, instruction_address);
+            instruction_address += 2;
+        }
+        write_opcode(0x1200, instruction_address); // jump back to 0x200
+
+        for (u8 glyph = 0x0; glyph <= 0xF; ++glyph) {
+            emulator->execute_next_instruction();
+            ASSERT_EQ(emulator->registers().at(register_), glyph);
+            emulator->execute_next_instruction();
+            ASSERT_EQ(emulator->address_register(), 5 * static_cast<Address>(glyph));
+            for (usize i = 0; i < 5; ++i) {
+                ASSERT_EQ(
+                        emulator->read(gsl::narrow<Address>(emulator->address_register() + i)),
+                        font_glyphs.at(glyph * 5 + i)
+                );
+            }
+        }
+        emulator->execute_next_instruction();
+        ASSERT_EQ(emulator->instruction_pointer(), 0x200);
+    }
 }
