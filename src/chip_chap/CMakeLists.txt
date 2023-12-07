@@ -1,0 +1,26 @@
+add_executable(chip_chap main.cpp
+        window.cpp
+        window.hpp
+        color.hpp
+        event.hpp
+        key_code.hpp
+        visitor.hpp
+        application.cpp
+        application.hpp
+        chip_chap.hpp
+)
+
+target_link_libraries(chip_chap
+        PRIVATE
+        project_options
+        common
+        emulator
+        Microsoft.GSL::GSL
+        $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
+        $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
+        tl::expected
+        tl::optional
+        glad::glad
+)
+
+target_link_system_libraries(chip_chap PRIVATE imgui)
