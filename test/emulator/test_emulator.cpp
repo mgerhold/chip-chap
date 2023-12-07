@@ -777,3 +777,45 @@ TEST_F(DefaultState, BinaryCodedDecimal) {
         emulator->execute_next_instruction(); // for the jump
     }
 }
+
+// FX55: Store the values of registers V0 to VX inclusive in memory starting at address I
+//       I is set to I + X + 1 after operation
+TEST_F(DefaultState, Store) {
+    auto register_values = std::array<u8, 16>{};
+    for (auto& value : register_values) {
+        value = random_byte();
+    }
+
+    auto instruction_address = Address{ 0x200 };
+    for (u8 register_ = 0x0; register_ <= 0xF; ++register_) {
+        write_set_register_opcode(register_, register_values.at(register_), instruction_address);
+        instruction_address += 2;
+    }
+
+    for (u8 bound = 0x0; bound <= 0xF; ++bound) {
+        write_opcode(0xA050, instruction_address); // set address register to 0x50
+        instruction_address += 2;
+        auto const opcode = 0xF055 | (bound << 8);
+        write_opcode(opcode, instruction_address);
+        instruction_address += 2;
+    }
+
+    for (u8 register_ = 0x0; register_ <= 0xF; ++register_) {
+        emulator->execute_next_instruction();
+    }
+    for (usize i = 0; i < register_values.size(); ++i) {
+        ASSERT_EQ(register_values.at(i), emulator->registers().at(gsl::narrow<u8>(i)));
+    }
+
+    for (u8 bound = 0x0; bound <= 0xF; ++bound) {
+        emulator->execute_next_instruction();
+        ASSERT_EQ(emulator->address_register(), 0x50);
+
+        emulator->execute_next_instruction();
+        for (usize i = 0; i < register_values.size(); ++i) {
+            auto const expected = (gsl::narrow<u8>(i) <= bound ? register_values.at(i) : 0);
+            ASSERT_EQ(emulator->read(0x50 + i), expected);
+        }
+        ASSERT_EQ(emulator->address_register(), 0x50 + bound + 1);
+    }
+}

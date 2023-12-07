@@ -318,6 +318,16 @@ namespace emulator {
                     advance();
                     break;
                 }
+                if ((opcode & 0xFF) == 0x55) {
+                    // FX55: Store the values of registers V0 to VX inclusive in memory starting at address I
+                    //       I is set to I + X + 1 after operation
+                    for (u8 i = 0; i <= x; ++i) {
+                        write(address_register() + i, registers().at(i));
+                    }
+                    m_address_register += x + 1;
+                    advance();
+                    break;
+                }
                 m_halted = true;
                 break;
             default:
