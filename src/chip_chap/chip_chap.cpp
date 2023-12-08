@@ -52,13 +52,22 @@ ChipChap::ChipChap() : m_input_source{ default_key_bindings }, m_emulator{ m_scr
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    m_screen.set_pixel(0, 0, true);   // todo: remove (just for testing purposes)
-    m_screen.set_pixel(63, 31, true); // todo: remove (just for testing purposes)
-    m_emulator.write(0x200, 0x12);
-    m_emulator.write(0x201, 0x0A);
-    m_emulator.write(0x20A, 0x12);
-    m_emulator.write(0x20B, 0x00);
+    auto write_instruction = [this, address = emulator::Chip8::Address{0x200}] (u16 const instruction) mutable {
+        m_emulator.write(address, instruction >> 8);
+        m_emulator.write(address + 1, instruction & 0xFF);
+        address += 2;
+    };
+
+    write_instruction(0x6000); // 6XNN: Store number NN in register VX
+    write_instruction(0xF029); // set address to glyph sprite
+    write_instruction(0xD115); // draw glyph
+    write_instruction(0x7001); // ++VX
+    write_instruction(0xD115); // undraw glyph
+    write_instruction(0x4010); // skip next instruction if VX != 0x10
+    write_instruction(0x1200); // jump back to the start
+    write_instruction(0x1202); // jump to 0x202
 }
+
 ChipChap::~ChipChap() {
     glDeleteTextures(1, &m_texture_name);
 }
