@@ -66,7 +66,9 @@ void Window::update() {
                 m_events.emplace_back(event::Quit{});
                 break;
             case SDL_KEYDOWN:
-                m_events.emplace_back(event::KeyDown{ static_cast<KeyCode>(event.key.keysym.sym) });
+                if (event.key.repeat == 0) {
+                    m_events.emplace_back(event::KeyDown{ static_cast<KeyCode>(event.key.keysym.sym) });
+                }
                 break;
             case SDL_KEYUP:
                 m_events.emplace_back(event::KeyUp{ static_cast<KeyCode>(event.key.keysym.sym) });

@@ -281,7 +281,9 @@ namespace emulator {
                 }
                 if ((opcode & 0xFF) == 0x0A) {
                     // FX0A: Wait for a keypress and store the result in register VX
-                    m_registers.at(x) = static_cast<u8>(m_input_source->await_keypress());
+                    m_input_source->await_keypress([this, x](Key const key) {
+                        m_registers.at(x) = static_cast<u8>(key);
+                    });
                     advance();
                     break;
                 }

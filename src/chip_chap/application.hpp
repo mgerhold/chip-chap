@@ -22,6 +22,7 @@ public:
 protected:
     virtual void update() = 0;
     virtual void imgui_render() const = 0;
+    virtual void handle_event(event::Event const& event) = 0;
     [[nodiscard]] double elapsed_seconds() const;
     [[nodiscard]] double delta_seconds() const;
     void quit();

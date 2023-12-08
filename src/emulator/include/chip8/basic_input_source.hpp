@@ -1,6 +1,7 @@
 #pragma once
 
 #include <common/types.hpp>
+#include <functional>
 
 namespace emulator {
 
@@ -27,7 +28,7 @@ namespace emulator {
     public:
         virtual ~BasicInputSource() = default;
 
-        [[nodiscard]] virtual Key await_keypress() = 0;
+        virtual void await_keypress(std::function<void(Key)> callback) = 0;
         [[nodiscard]] virtual bool is_key_pressed(Key key) = 0;
     };
 

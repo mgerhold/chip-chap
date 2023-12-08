@@ -16,13 +16,18 @@ void Application::run() {
         using std::chrono::duration_cast, std::chrono::microseconds;
 
         m_window.update();
-        while (auto event = m_window.next_event()) {
+        while (auto const event = m_window.next_event()) {
             visit(
                     event.value(),
                     [&](event::Quit const&) { m_running = false; },
-                    [&](event::KeyDown const&) {},
+                    [&](event::KeyDown const& key_down_event) {
+                        if (key_down_event.which == KeyCode::Escape) {
+                            m_running = false;
+                        }
+                    },
                     [&](event::KeyUp const&) {}
             );
+            handle_event(event.value());
         }
         auto const current = Clock::now();
         auto const elapsed = current - last;

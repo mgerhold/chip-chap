@@ -24,8 +24,29 @@ private:
     TimeSource m_time_source;
     emulator::Chip8 m_emulator;
 
+    static constexpr auto default_key_bindings = std::array{
+        // clang-format off
+        KeyCode::X,
+        KeyCode::Num1,
+        KeyCode::Num2,
+        KeyCode::Num3,
+        KeyCode::Q,
+        KeyCode::W,
+        KeyCode::E,
+        KeyCode::A,
+        KeyCode::S,
+        KeyCode::D,
+        KeyCode::Y,
+        KeyCode::C,
+        KeyCode::Num4,
+        KeyCode::R,
+        KeyCode::F,
+        KeyCode::V,
+        // clang-format on
+    };
+
 public:
-    ChipChap() : m_emulator{ m_screen, m_input_source, m_time_source } {
+    ChipChap() : m_input_source{ default_key_bindings }, m_emulator{ m_screen, m_input_source, m_time_source } {
         glGenTextures(1, &m_texture_name);
         glBindTexture(GL_TEXTURE_2D, m_texture_name);
 
@@ -56,6 +77,10 @@ protected:
             m_deltas.clear();
             m_emulator.execute_next_instruction(); // todo: this is just for testing
         }
+    }
+
+    void handle_event(event::Event const& event) override {
+        m_input_source.handle_event(event);
     }
 
     void imgui_render() const override {
@@ -117,10 +142,25 @@ protected:
         }
         ImGui::End();
 
+        static constexpr auto dimmed = IM_COL32(128, 128, 128, 255);
+        static constexpr auto white = IM_COL32(255, 255, 255, 255);
+        static constexpr auto render_text = []<typename... Args>(
+                                                    unsigned const color,
+                                                    bool const same_line,
+                                                    char const* const fmt,
+                                                    Args&&... args
+                                            ) {
+            ImGui::PushStyleColor(ImGuiCol_Text, color);
+            if (same_line) {
+                ImGui::SameLine();
+            }
+            ImGui::Text(fmt, std::forward<Args>(args)...);
+            ImGui::PopStyleColor();
+        };
+
         ImGui::Begin("Execution");
         using Address = emulator::Chip8::Address;
-        ImGui::Text("Instruction Pointer: 0x%04X", m_emulator.instruction_pointer());
-        ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(128, 128, 128, 255));
+        render_text(white, false, "Instruction Pointer: 0x%04X", m_emulator.instruction_pointer());
         for (int line = 0; line < 3; ++line) {
             if ((line == 0 and m_emulator.instruction_pointer() < 8)
                 or (line == 2 and m_emulator.instruction_pointer() >= m_emulator.memory().size() - 8)) {
@@ -128,20 +168,38 @@ protected:
             }
             auto const start_address =
                     gsl::narrow<Address>((m_emulator.instruction_pointer() & 0xFFFFFFF8) + (line - 1) * 8);
-            ImGui::Text("0x%04X:", start_address);
+            render_text(white, false, "0x%04X:", start_address);
             for (Address offset = 0; offset < 8; ++offset) {
                 auto const address = gsl::narrow<Address>(start_address + offset);
-                ImGui::SameLine();
-                if (address == m_emulator.instruction_pointer()) {
-                    ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 255));
-                }
-                ImGui::Text("%02X", m_emulator.read(address));
-                if (address == m_emulator.instruction_pointer() + 1) {
-                    ImGui::PopStyleColor();
+                if (address == m_emulator.instruction_pointer() or address == m_emulator.instruction_pointer() + 1) {
+                    render_text(white, true, "%02X", m_emulator.read(address));
+                } else {
+                    render_text(dimmed, true, "%02X", m_emulator.read(address));
                 }
             }
         }
-        ImGui::PopStyleColor();
+        ImGui::End();
+
+        ImGui::Begin("Keypad");
+        render_text(m_input_source.key_state(emulator::Key::Key1) ? white : dimmed, false, "1");
+        render_text(m_input_source.key_state(emulator::Key::Key2) ? white : dimmed, true, "2");
+        render_text(m_input_source.key_state(emulator::Key::Key3) ? white : dimmed, true, "3");
+        render_text(m_input_source.key_state(emulator::Key::C) ? white : dimmed, true, "C");
+
+        render_text(m_input_source.key_state(emulator::Key::Key4) ? white : dimmed, false, "4");
+        render_text(m_input_source.key_state(emulator::Key::Key5) ? white : dimmed, true, "5");
+        render_text(m_input_source.key_state(emulator::Key::Key6) ? white : dimmed, true, "6");
+        render_text(m_input_source.key_state(emulator::Key::D) ? white : dimmed, true, "D");
+
+        render_text(m_input_source.key_state(emulator::Key::Key7) ? white : dimmed, false, "7");
+        render_text(m_input_source.key_state(emulator::Key::Key8) ? white : dimmed, true, "8");
+        render_text(m_input_source.key_state(emulator::Key::Key9) ? white : dimmed, true, "9");
+        render_text(m_input_source.key_state(emulator::Key::E) ? white : dimmed, true, "E");
+
+        render_text(m_input_source.key_state(emulator::Key::A) ? white : dimmed, false, "A");
+        render_text(m_input_source.key_state(emulator::Key::Key0) ? white : dimmed, true, "0");
+        render_text(m_input_source.key_state(emulator::Key::B) ? white : dimmed, true, "B");
+        render_text(m_input_source.key_state(emulator::Key::F) ? white : dimmed, true, "F");
         ImGui::End();
     }
 };
