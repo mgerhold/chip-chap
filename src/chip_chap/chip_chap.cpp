@@ -114,7 +114,7 @@ void ChipChap::render_keypad_window() const {
 void ChipChap::render_execution_window() const {
     ImGui::Begin("Execution");
     using Address = emulator::Chip8::Address;
-    render_text(white, false, "Instruction Pointer: 0x%04X", m_emulator.instruction_pointer());
+    render_text(white, false, "Instruction Pointer: 0x%03X", m_emulator.instruction_pointer());
     for (int line = 0; line < 3; ++line) {
         if ((line == 0 and m_emulator.instruction_pointer() < 8)
             or (line == 2 and m_emulator.instruction_pointer() >= m_emulator.memory().size() - 8)) {
@@ -122,7 +122,7 @@ void ChipChap::render_execution_window() const {
         }
         auto const start_address =
                 gsl::narrow<Address>(static_cast<int>(m_emulator.instruction_pointer() & 0xFFFFFFF8) + (line - 1) * 8);
-        render_text(white, false, "0x%04X:", start_address);
+        render_text(white, false, "0x%03X:", start_address);
         for (Address offset = 0; offset < 8; ++offset) {
             auto const address = gsl::narrow<Address>(start_address + offset);
             if (address == m_emulator.instruction_pointer() or address == m_emulator.instruction_pointer() + 1) {
