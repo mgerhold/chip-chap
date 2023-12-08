@@ -10,6 +10,11 @@
 
 class ChipChap final : public Application {
 private:
+    enum class State {
+        Paused,
+        Playing,
+    };
+
     std::vector<double> m_deltas;
     double m_delta_display_value = 0.0;
     GLuint m_texture_name = 0;
@@ -17,6 +22,9 @@ private:
     InputSource m_input_source;
     TimeSource m_time_source;
     emulator::Chip8 m_emulator;
+    State m_state = State::Paused;
+    double m_time_of_last_instruction;
+    double m_instructions_per_second = 5.0;
 
 public:
     ChipChap();
@@ -25,7 +33,7 @@ public:
 protected:
     void update() override;
     void handle_event(event::Event const& event) override;
-    void imgui_render() const override;
+    void imgui_render() override;
 
 private:
     void render_keypad_window() const;

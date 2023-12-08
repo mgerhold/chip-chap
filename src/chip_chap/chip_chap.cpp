@@ -39,7 +39,10 @@ void render_text(unsigned const color, bool const same_line, char const* const f
     ImGui::PopStyleColor();
 };
 
-ChipChap::ChipChap() : m_input_source{ default_key_bindings }, m_emulator{ m_screen, m_input_source, m_time_source } {
+ChipChap::ChipChap()
+    : m_input_source{ default_key_bindings },
+      m_emulator{ m_screen, m_input_source, m_time_source },
+      m_time_of_last_instruction{ elapsed_seconds() } {
     glGenTextures(1, &m_texture_name);
     glBindTexture(GL_TEXTURE_2D, m_texture_name);
 
@@ -74,7 +77,12 @@ void ChipChap::update() {
     if (sum >= 1.0) {
         m_delta_display_value = sum / static_cast<double>(m_deltas.size());
         m_deltas.clear();
-        m_emulator.execute_next_instruction(); // todo: this is just for testing
+    }
+    if (m_state == State::Playing) {
+        while (m_time_of_last_instruction < elapsed_seconds()) {
+            m_emulator.execute_next_instruction();
+            m_time_of_last_instruction += 1.0 / m_instructions_per_second;
+        }
     }
 }
 void ChipChap::handle_event(event::Event const& event) {
@@ -178,10 +186,57 @@ void ChipChap::render_screen_window() const {
     ImGui::End();
 }
 
-void ChipChap::imgui_render() const {
+void ChipChap::imgui_render() {
     render_screen_window();
     render_stats_window();
     render_registers_window();
     render_execution_window();
     render_keypad_window();
+
+    ImGui::ShowDemoWindow();
+
+    ImGui::Begin("Controls");
+
+    if (m_state == State::Playing) {
+        ImGui::BeginDisabled();
+    }
+    auto const start_playing = ImGui::Button("Play");
+    if (m_state == State::Playing) {
+        ImGui::EndDisabled();
+    }
+
+    if (m_state != State::Playing) {
+        ImGui::BeginDisabled();
+    }
+    ImGui::SameLine();
+    auto const should_pause = ImGui::Button("Pause");
+    if (m_state != State::Playing) {
+        ImGui::EndDisabled();
+    }
+
+    if (m_state != State::Paused) {
+        ImGui::BeginDisabled();
+    }
+    ImGui::SameLine();
+    auto const should_step = ImGui::Button("Step");
+    if (m_state != State::Paused) {
+        ImGui::EndDisabled();
+    }
+
+    auto execution_frequency = static_cast<float>(m_instructions_per_second);
+    ImGui::SliderFloat("##", &execution_frequency, 1.0f, 6000.0f, "frequency = %.1f");
+    m_instructions_per_second = static_cast<double>(execution_frequency);
+
+    if (start_playing) {
+        m_state = State::Playing;
+        m_time_of_last_instruction = elapsed_seconds();
+    }
+    if (should_pause) {
+        m_state = State::Paused;
+    }
+    if (should_step) {
+        m_emulator.execute_next_instruction();
+    }
+
+    ImGui::End();
 }
