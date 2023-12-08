@@ -64,16 +64,6 @@ void ChipChap::handle_event(event::Event const& event) {
 void ChipChap::imgui_render() const {
     glClearColor(30.0f / 255.0f, 30.0f / 255.0f, 46.0f / 255.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-
-    auto const brightness0 = static_cast<u8>(static_cast<usize>(elapsed_seconds()) % 2 * 255);
-    auto const brightness1 = static_cast<u8>(std::round((std::sin(elapsed_seconds()) + 1.0) * 255.0 / 2.0));
-    auto const brightness2 = static_cast<u8>(std::round((std::cos(elapsed_seconds() * 0.8) + 1.0) * 255.0 / 2.0));
-    auto const brightness3 = static_cast<u8>(std::round((std::sin(elapsed_seconds() * 1.3) + 1.0) * 255.0 / 2.0));
-    auto const texture = std::array<u8, 16>{
-        brightness0, brightness0, brightness0, 255, brightness1, 0, brightness1, 255,
-        brightness2, brightness2, 0,           255, 0,           0, brightness3, 255,
-    };
-    // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture.data());
     glTexImage2D(
             GL_TEXTURE_2D,
             0,
