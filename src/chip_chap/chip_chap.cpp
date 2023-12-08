@@ -52,9 +52,9 @@ ChipChap::ChipChap()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    auto write_instruction = [this, address = emulator::Chip8::Address{0x200}] (u16 const instruction) mutable {
-        m_emulator.write(address, instruction >> 8);
-        m_emulator.write(address + 1, instruction & 0xFF);
+    auto write_instruction = [this, address = emulator::Chip8::Address{ 0x200 }](u16 const instruction) mutable {
+        m_emulator.write(address, gsl::narrow<u8>(instruction >> 8));
+        m_emulator.write(address + 1, gsl::narrow<u8>(instruction & 0xFF));
         address += 2;
     };
 
@@ -121,7 +121,7 @@ void ChipChap::render_execution_window() const {
             continue;
         }
         auto const start_address =
-                gsl::narrow<Address>((m_emulator.instruction_pointer() & 0xFFFFFFF8) + (line - 1) * 8);
+                gsl::narrow<Address>(static_cast<int>(m_emulator.instruction_pointer() & 0xFFFFFFF8) + (line - 1) * 8);
         render_text(white, false, "0x%04X:", start_address);
         for (Address offset = 0; offset < 8; ++offset) {
             auto const address = gsl::narrow<Address>(start_address + offset);
