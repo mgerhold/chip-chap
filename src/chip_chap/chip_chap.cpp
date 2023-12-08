@@ -138,6 +138,20 @@ void ChipChap::render_registers_window() const {
     ImGui::Begin("Registers");
     for (u8 register_ = 0; register_ < 16; ++register_) {
         ImGui::Text("V%X: 0x%02X", register_, m_emulator.registers().at(register_));
+        switch (register_) {
+            case 0:
+                ImGui::SameLine();
+                ImGui::Text("    VI: 0x%03X", m_emulator.address_register());
+                break;
+            case 1:
+                ImGui::SameLine();
+                ImGui::Text(" Delay:  0x%02X", m_emulator.delay_timer());
+                break;
+            case 2:
+                ImGui::SameLine();
+                ImGui::Text(" Sound:  0x%02X", m_emulator.sound_timer());
+                break;
+        }
     }
     ImGui::End();
 }
