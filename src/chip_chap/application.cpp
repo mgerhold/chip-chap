@@ -5,7 +5,7 @@
 #include <backends/imgui_impl_sdl2.h>
 #include <chrono>
 
-Application::Application() : m_window{ 800, 600, "MyWindow" } { }
+Application::Application() : m_window{ 800, 600, "Chip-Chap" } { }
 
 void Application::run() {
     using Clock = std::chrono::steady_clock;
