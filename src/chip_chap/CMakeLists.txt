@@ -14,6 +14,7 @@ add_executable(chip_chap main.cpp
         input_source.hpp
         time_source.cpp
         time_source.hpp
+        chip_chap.cpp
 )
 
 target_link_libraries(chip_chap
