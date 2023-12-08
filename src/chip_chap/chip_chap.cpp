@@ -1,8 +1,5 @@
 #include "chip_chap.hpp"
-
-
 #include "imgui_internal.h"
-
 #include <array>
 #include <gsl/gsl>
 #include <imgui.h>
