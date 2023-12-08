@@ -42,6 +42,9 @@ function(set_warnings target_name warnings_as_errors)
             -Wdouble-promotion # warn if float is implicit promoted to double
             -Wformat=2 # warn on security issues around functions that format output (ie printf)
             -Wimplicit-fallthrough # warn on statements that fallthrough without an explicit annotation
+
+            -Wno-format-security # disabled because GCC/clang doesn't correctly recognize compile-time formatting strings
+            -Wno-format-nonliteral # disabled because GCC/clang doesn't correctly recognize compile-time formatting strings
     )
 
     set(gcc_warnings
