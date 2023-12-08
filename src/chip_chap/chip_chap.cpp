@@ -157,7 +157,7 @@ void ChipChap::render_registers_window() const {
 }
 void ChipChap::render_stats_window() const {
     ImGui::Begin("Stats");
-    ImGui::Text("delta: %.06f s", m_delta_display_value);
+    ImGui::Text("delta: %.03f ms", m_delta_display_value * 1000.0);
     if (m_delta_display_value == 0.0) {
         ImGui::Text("fps: -");
     } else {
