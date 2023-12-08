@@ -26,4 +26,11 @@ protected:
     void update() override;
     void handle_event(event::Event const& event) override;
     void imgui_render() const override;
+
+private:
+    void render_keypad_window() const;
+    void render_execution_window() const;
+    void render_registers_window() const;
+    void render_stats_window() const;
+    void render_screen_window() const;
 };
