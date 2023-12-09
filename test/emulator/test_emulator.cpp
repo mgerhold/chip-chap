@@ -109,7 +109,7 @@ TEST_F(DefaultState, WriteAndReadMemoryExternally) {
     auto random_bytes = std::vector<u8>{};
     random_bytes.reserve(emulator->memory().size());
     for (auto i = usize{ 0 }; i < emulator->memory().size(); ++i) {
-        random_bytes.push_back(m_random.u8());
+        random_bytes.push_back(m_random.u8_());
     }
 
     for (auto i = usize{ 0 }; i < emulator->memory().size(); ++i) {
@@ -245,7 +245,7 @@ TEST_F(DefaultState, SkipIfRegistersAreEqual) {
 // 6XNN: Store number NN in register VX
 TEST_F(DefaultState, StoreConstantInRegister) {
     for (u8 register_ = 0; register_ < 16; ++register_) {
-        auto const random_number = m_random.u8();
+        auto const random_number = m_random.u8_();
         auto const opcode = 0x6000 | (register_ << 8) | random_number;
         execute_opcodes(opcode);
         ASSERT_EQ(emulator->registers().at(register_), random_number);
@@ -255,8 +255,8 @@ TEST_F(DefaultState, StoreConstantInRegister) {
 // 7XNN: Add the value NN to register VX
 TEST_F(DefaultState, AddConstantToRegister) {
     for (u8 register_ = 0; register_ < 16; ++register_) {
-        auto const lhs = m_random.u8();
-        auto const rhs = m_random.u8();
+        auto const lhs = m_random.u8_();
+        auto const rhs = m_random.u8_();
         auto const sum = static_cast<u8>(lhs + rhs);
         set_register(register_, lhs);
         execute_opcodes(
@@ -271,7 +271,7 @@ TEST_F(DefaultState, AddConstantToRegister) {
 TEST_F(DefaultState, CopyRegisterValue) {
     for (u8 source = 0; source < 16; ++source) {
         for (u8 destination = 0; destination < 16; ++destination) {
-            auto const random_number = m_random.u8();
+            auto const random_number = m_random.u8_();
             set_register(source, random_number);
             execute_opcodes(
                     // copy from source into value
@@ -777,7 +777,7 @@ TEST_F(DefaultState, BinaryCodedDecimal) {
 TEST_F(DefaultState, Store) {
     auto register_values = std::array<u8, 16>{};
     for (auto& value : register_values) {
-        value = m_random.u8();
+        value = m_random.u8_();
     }
 
     auto instruction_address = Address{ 0x200 };
@@ -818,7 +818,7 @@ TEST_F(DefaultState, Store) {
 //       I is set to I + X + 1 after operation
 TEST_F(DefaultState, Load) {
     for (Address address = 0; address < 16; ++address) {
-        emulator->write(address + 0x50, m_random.u8());
+        emulator->write(address + 0x50, m_random.u8_());
     }
 
     auto instruction_address = Address{ 0x200 };

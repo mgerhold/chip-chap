@@ -16,7 +16,7 @@ public:
         return gsl::narrow<std::byte>(m_8bit_uniform_int_distribution(m_generator));
     }
 
-    [[nodiscard]] u8 u8() {
-        return static_cast<::u8>(byte());
+    [[nodiscard]] u8 u8_() {
+        return static_cast<u8>(byte());
     }
 };
