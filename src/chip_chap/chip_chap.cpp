@@ -71,6 +71,7 @@ ChipChap::ChipChap()
 ChipChap::~ChipChap() {
     glDeleteTextures(1, &m_texture_name);
 }
+
 void ChipChap::update() {
     m_deltas.push_back(delta_seconds());
     auto const sum = std::accumulate(m_deltas.cbegin(), m_deltas.cend(), 0.0);
@@ -85,9 +86,11 @@ void ChipChap::update() {
         }
     }
 }
+
 void ChipChap::handle_event(event::Event const& event) {
     m_input_source.handle_event(event);
 }
+
 void ChipChap::render_keypad_window() const {
     ImGui::Begin("Keypad");
     render_text(m_input_source.key_state(emulator::Key::Key1) ? white : dimmed, false, "1");
@@ -111,6 +114,7 @@ void ChipChap::render_keypad_window() const {
     render_text(m_input_source.key_state(emulator::Key::F) ? white : dimmed, true, "F");
     ImGui::End();
 }
+
 void ChipChap::render_execution_window() const {
     ImGui::Begin("Execution");
     using Address = emulator::Chip8::Address;
@@ -134,6 +138,7 @@ void ChipChap::render_execution_window() const {
     }
     ImGui::End();
 }
+
 void ChipChap::render_registers_window() const {
     ImGui::Begin("Registers");
     for (u8 register_ = 0; register_ < 16; ++register_) {
@@ -155,6 +160,7 @@ void ChipChap::render_registers_window() const {
     }
     ImGui::End();
 }
+
 void ChipChap::render_stats_window() const {
     ImGui::Begin("Stats");
     ImGui::Text("delta: %.03f ms", m_delta_display_value * 1000.0);
@@ -166,6 +172,7 @@ void ChipChap::render_stats_window() const {
     ImGui::Text("elapsed time: %.03f s", elapsed_seconds());
     ImGui::End();
 }
+
 void ChipChap::render_screen_window() const {
     glClearColor(30.0f / 255.0f, 30.0f / 255.0f, 46.0f / 255.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
