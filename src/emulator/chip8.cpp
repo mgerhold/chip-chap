@@ -195,7 +195,9 @@ namespace emulator {
                     // 8XYE: Store the value of register VY shifted left one bit in register VX
                     //       Set register VF to the most significant bit prior to the shift
                     auto const msb = static_cast<u8>((m_registers.at(y) & 0b1000'0000) >> 7);
-                    m_registers.at(x) = gsl::narrow<u8>(m_registers.at(y) << 1);
+
+                    // not using gsl::narrow, since this can purposely overflow
+                    m_registers.at(x) = gsl::narrow_cast<u8>(m_registers.at(y) << 1);
                     m_registers.at(0xF) = msb;
                     advance();
                     break;
