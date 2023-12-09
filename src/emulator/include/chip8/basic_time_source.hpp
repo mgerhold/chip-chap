@@ -6,7 +6,7 @@ namespace emulator {
     public:
         virtual ~BasicTimeSource() = default;
 
-        [[nodiscard]] virtual double elapsed_seconds() = 0;
+        [[nodiscard]] virtual double elapsed_seconds() const = 0;
     };
 
 } // namespace emulator

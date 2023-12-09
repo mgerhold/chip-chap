@@ -25,6 +25,8 @@ private:
     State m_state = State::Paused;
     double m_time_of_last_instruction;
     double m_instructions_per_second = 5.0;
+    usize m_steps_executed = 0;
+    bool m_stop_time_when_paused = true;
 
 public:
     ChipChap();
@@ -36,9 +38,10 @@ protected:
     void imgui_render() override;
 
 private:
+    void make_step();
     void render_keypad_window() const;
     void render_execution_window() const;
     void render_registers_window() const;
-    void render_stats_window() const;
+    void render_general_window() const;
     void render_screen_window() const;
 };

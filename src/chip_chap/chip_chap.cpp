@@ -80,10 +80,14 @@ void ChipChap::update() {
         m_deltas.clear();
     }
     if (m_state == State::Playing) {
+        auto const delta = 1.0 / m_instructions_per_second;
         while (m_time_of_last_instruction < elapsed_seconds()) {
-            m_emulator.execute_next_instruction();
-            m_time_of_last_instruction += 1.0 / m_instructions_per_second;
+            make_step();
+            m_time_of_last_instruction += delta;
+            m_time_source.advance(delta);
         }
+    } else if (not m_stop_time_when_paused) {
+        m_time_source.advance(delta_seconds());
     }
 }
 
@@ -161,15 +165,17 @@ void ChipChap::render_registers_window() const {
     ImGui::End();
 }
 
-void ChipChap::render_stats_window() const {
-    ImGui::Begin("Stats");
-    ImGui::Text("delta: %.03f ms", m_delta_display_value * 1000.0);
+void ChipChap::render_general_window() const {
+    ImGui::Begin("General");
+    ImGui::Text("       delta: %.03f ms", m_delta_display_value * 1000.0);
     if (m_delta_display_value == 0.0) {
-        ImGui::Text("fps: -");
+        ImGui::Text("         fps: -");
     } else {
-        ImGui::Text("fps: %.01f", 1.0 / m_delta_display_value);
+        ImGui::Text("         fps: %.01f", 1.0 / m_delta_display_value);
     }
     ImGui::Text("elapsed time: %.03f s", elapsed_seconds());
+    ImGui::Text(" time source: %.03f s", m_time_source.elapsed_seconds());
+    ImGui::Text("       steps: %zu", m_steps_executed);
     ImGui::End();
 }
 
@@ -209,7 +215,7 @@ void ChipChap::render_screen_window() const {
 
 void ChipChap::imgui_render() {
     render_screen_window();
-    render_stats_window();
+    render_general_window();
     render_registers_window();
     render_execution_window();
     render_keypad_window();
@@ -244,6 +250,9 @@ void ChipChap::imgui_render() {
         ImGui::EndDisabled();
     }
 
+    ImGui::SameLine();
+    ImGui::Checkbox("stop time when paused", &m_stop_time_when_paused);
+
     auto execution_frequency = static_cast<float>(m_instructions_per_second);
     ImGui::SliderFloat("##", &execution_frequency, 1.0f, 6000.0f, "frequency = %.1f");
     m_instructions_per_second = static_cast<double>(execution_frequency);
@@ -256,8 +265,13 @@ void ChipChap::imgui_render() {
         m_state = State::Paused;
     }
     if (should_step) {
-        m_emulator.execute_next_instruction();
+        make_step();
     }
 
     ImGui::End();
+}
+
+void ChipChap::make_step() {
+    m_emulator.execute_next_instruction();
+    ++m_steps_executed;
 }

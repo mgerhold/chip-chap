@@ -8,7 +8,7 @@ public:
 
     MockTimeSource() = default;
 
-    [[nodiscard]] double elapsed_seconds() override {
+    [[nodiscard]] double elapsed_seconds() const override {
         return elapsed;
     }
 };
