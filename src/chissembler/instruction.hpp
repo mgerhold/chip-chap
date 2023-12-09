@@ -34,9 +34,9 @@ namespace instruction {
         Target m_destination;
 
     public:
-        Copy(Target const m_source, Target const m_destination)
-            : m_source{ m_source },
-              m_destination{ m_destination } { }
+        Copy(Target const& source, Target const& destination)
+            : m_source{ source },
+              m_destination{ destination } { }
 
         void append(std::vector<std::byte>& machine_code) const override {
             assert(not std::holds_alternative<U8Immediate>(m_destination) and "cannot assign into an immediate");
