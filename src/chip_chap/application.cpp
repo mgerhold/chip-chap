@@ -1,9 +1,9 @@
 #include "application.hpp"
-#include "visitor.hpp"
 #include <SDL.h>
 #include <backends/imgui_impl_opengl3.h>
 #include <backends/imgui_impl_sdl2.h>
 #include <chrono>
+#include <common/visitor.hpp>
 
 Application::Application() : m_window{ 800, 600, "Chip-Chap" } { }
 

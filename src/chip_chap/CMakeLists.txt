@@ -4,7 +4,6 @@ add_executable(chip_chap main.cpp
         color.hpp
         event.hpp
         key_code.hpp
-        visitor.hpp
         application.cpp
         application.hpp
         chip_chap.hpp
