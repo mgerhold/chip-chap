@@ -21,6 +21,11 @@ target_link_libraries(chip_chap
         project_options
         common
         emulator
+)
+
+target_link_system_libraries(chip_chap
+        PRIVATE
+        imgui
         Microsoft.GSL::GSL
         $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
         $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
@@ -28,5 +33,3 @@ target_link_libraries(chip_chap
         tl::optional
         glad::glad
 )
-
-target_link_system_libraries(chip_chap PRIVATE imgui)

@@ -1,6 +1,17 @@
 add_library(chissembler STATIC
         include/chissembler/chissembler.hpp
         chissembler.cpp
+        source_location.hpp
+        token_type.hpp
+        token.hpp
+        lexer.cpp
+        lexer.hpp
+        instruction.cpp
+        instruction.hpp
+        target.hpp
+        emitter.cpp
+        emitter.hpp
+        utils.hpp
 )
 
 target_link_libraries(chissembler

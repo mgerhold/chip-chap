@@ -1,6 +1,8 @@
+#include "common/random.hpp"
 #include "mock_input_source.hpp"
 #include "mock_screen.hpp"
 #include "mock_time_source.hpp"
+
 #include <chip8/chip8.hpp>
 #include <gsl/gsl>
 #include <gtest/gtest.h>
@@ -34,21 +36,13 @@ protected:
     MockInputSource input_source;
     MockTimeSource time_source;
     std::unique_ptr<emulator::Chip8> emulator;
-    std::mt19937 random_generator{ std::random_device{}() };
-    std::uniform_int_distribution<int> uniform_int_distribution;
+    Random m_random;
     Address address = 0x200;
 
     void SetUp() override {
         time_source = MockTimeSource{};
         emulator = std::make_unique<emulator::Chip8>(screen, input_source, time_source);
         address = Address{ 0x200 };
-
-        random_generator = std::mt19937{ std::random_device{}() };
-        uniform_int_distribution = std::uniform_int_distribution<int>(0, 255); // instantiating for u8 is UB (ﾉಥ益ಥ）ﾉ彡┻━┻
-    }
-
-    [[nodiscard]] u8 random_byte() {
-        return gsl::narrow<u8>(uniform_int_distribution(random_generator));
     }
 
     void write_opcode(u16 const opcode) {
@@ -115,7 +109,7 @@ TEST_F(DefaultState, WriteAndReadMemoryExternally) {
     auto random_bytes = std::vector<u8>{};
     random_bytes.reserve(emulator->memory().size());
     for (auto i = usize{ 0 }; i < emulator->memory().size(); ++i) {
-        random_bytes.push_back(random_byte());
+        random_bytes.push_back(m_random.u8());
     }
 
     for (auto i = usize{ 0 }; i < emulator->memory().size(); ++i) {
@@ -251,7 +245,7 @@ TEST_F(DefaultState, SkipIfRegistersAreEqual) {
 // 6XNN: Store number NN in register VX
 TEST_F(DefaultState, StoreConstantInRegister) {
     for (u8 register_ = 0; register_ < 16; ++register_) {
-        auto const random_number = random_byte();
+        auto const random_number = m_random.u8();
         auto const opcode = 0x6000 | (register_ << 8) | random_number;
         execute_opcodes(opcode);
         ASSERT_EQ(emulator->registers().at(register_), random_number);
@@ -261,8 +255,8 @@ TEST_F(DefaultState, StoreConstantInRegister) {
 // 7XNN: Add the value NN to register VX
 TEST_F(DefaultState, AddConstantToRegister) {
     for (u8 register_ = 0; register_ < 16; ++register_) {
-        auto const lhs = random_byte();
-        auto const rhs = random_byte();
+        auto const lhs = m_random.u8();
+        auto const rhs = m_random.u8();
         auto const sum = static_cast<u8>(lhs + rhs);
         set_register(register_, lhs);
         execute_opcodes(
@@ -277,7 +271,7 @@ TEST_F(DefaultState, AddConstantToRegister) {
 TEST_F(DefaultState, CopyRegisterValue) {
     for (u8 source = 0; source < 16; ++source) {
         for (u8 destination = 0; destination < 16; ++destination) {
-            auto const random_number = random_byte();
+            auto const random_number = m_random.u8();
             set_register(source, random_number);
             execute_opcodes(
                     // copy from source into value
@@ -783,7 +777,7 @@ TEST_F(DefaultState, BinaryCodedDecimal) {
 TEST_F(DefaultState, Store) {
     auto register_values = std::array<u8, 16>{};
     for (auto& value : register_values) {
-        value = random_byte();
+        value = m_random.u8();
     }
 
     auto instruction_address = Address{ 0x200 };
@@ -824,7 +818,7 @@ TEST_F(DefaultState, Store) {
 //       I is set to I + X + 1 after operation
 TEST_F(DefaultState, Load) {
     for (Address address = 0; address < 16; ++address) {
-        emulator->write(address + 0x50, random_byte());
+        emulator->write(address + 0x50, m_random.u8());
     }
 
     auto instruction_address = Address{ 0x200 };
