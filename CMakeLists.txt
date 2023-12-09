@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.27)
+cmake_minimum_required(VERSION 3.26)
 project(chip_chap
         VERSION 0.0.1
         DESCRIPTION "a CHIP-8 emulator"
@@ -30,4 +30,8 @@ find_packages()
 
 add_subdirectory(vendor)
 add_subdirectory(src)
-add_subdirectory(test)
+
+if (BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(test)
+endif()

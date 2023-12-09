@@ -1,7 +1,5 @@
-if (BUILD_TESTS)
-    enable_testing()
-    find_package(GTest CONFIG REQUIRED)
-    include(GoogleTest)
+find_package(GTest CONFIG REQUIRED)
+include(GoogleTest)
 
-    add_subdirectory(emulator)
-endif()
+add_subdirectory(emulator)
+add_subdirectory(chissembler)
