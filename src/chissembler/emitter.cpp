@@ -1,14 +1,7 @@
 #include "emitter.hpp"
-
-
+#include "errors.hpp"
 #include "utils.hpp"
-
 #include <sstream>
-#include <stdexcept>
-
-class EmitterError final : public std::runtime_error {
-    using std::runtime_error::runtime_error;
-};
 
 [[nodiscard]] static u8 parse_u8(Token const& token) {
     auto stream = std::stringstream{};

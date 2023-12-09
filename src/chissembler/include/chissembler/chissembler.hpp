@@ -1,5 +1,6 @@
 #pragma once
 
+#include "errors.hpp"
 #include <cstddef>
 #include <string_view>
 #include <vector>

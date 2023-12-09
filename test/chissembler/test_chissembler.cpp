@@ -59,3 +59,17 @@ TEST(ChissemblerTests, CopyConstantIntoDataRegister) {
         ASSERT_EQ(machine_code, combine_instructions(0x6000 | (register_ << 8) | value));
     }
 }
+
+TEST(ChissemblerTests, CopyingInvalidImmediateFails) {
+    ASSERT_THROW(
+            {
+                try {
+                    auto const machine_code = chissembler::assemble("stdin"sv, "copy 256 VA"sv);
+                } catch (EmitterError const& e) {
+                    ASSERT_STREQ(e.what(), "stdin:1:6: '256' is not a valid 8 bit value");
+                    throw;
+                }
+            },
+            EmitterError
+    );
+}
