@@ -1,8 +1,8 @@
 #include "chip_chap.hpp"
-#include "imgui_internal.h"
 #include <array>
 #include <gsl/gsl>
 #include <imgui.h>
+#include <imgui_internal.h>
 #include <numeric>
 
 static constexpr auto dimmed = IM_COL32(128, 128, 128, 255);

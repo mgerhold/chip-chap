@@ -1,7 +1,7 @@
 #pragma once
 
-#include "common/types.hpp"
 #include <common/ostream_formatter.hpp>
+#include <common/types.hpp>
 #include <iostream>
 #include <string_view>
 

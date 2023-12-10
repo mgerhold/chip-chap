@@ -1,9 +1,8 @@
-#include "common/random.hpp"
 #include "mock_input_source.hpp"
 #include "mock_screen.hpp"
 #include "mock_time_source.hpp"
-
 #include <chip8/chip8.hpp>
+#include <common/random.hpp>
 #include <gsl/gsl>
 #include <gtest/gtest.h>
 #include <random>

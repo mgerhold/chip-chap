@@ -1,11 +1,11 @@
 #include "window.hpp"
-#include "SDL.h"
-#include "backends/imgui_impl_opengl3.h"
-#include "backends/imgui_impl_sdl2.h"
 #include "event.hpp"
-#include "imgui.h"
+#include <SDL.h>
+#include <backends/imgui_impl_opengl3.h>
+#include <backends/imgui_impl_sdl2.h>
 #include <format>
 #include <glad/glad.h>
+#include <imgui.h>
 
 WindowError::WindowError(std::string_view const message)
     : std::runtime_error{ std::format("failed to create window: {}", message) } { }

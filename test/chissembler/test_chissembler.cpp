@@ -1,8 +1,6 @@
-#include "common/random.hpp"
-
-
 #include <array>
 #include <chissembler/chissembler.hpp>
+#include <common/random.hpp>
 #include <common/types.hpp>
 #include <format>
 #include <gsl/gsl>
