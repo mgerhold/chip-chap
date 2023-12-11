@@ -33,10 +33,10 @@ static constexpr auto data_registers = std::array{
     result.reserve(sizeof...(instructions) * 2);
     (
             [&] {
-                auto const msb = instructions >> 8;
-                auto const lsb = instructions & 0xFF;
-                result.push_back(gsl::narrow<std::byte>(msb));
-                result.push_back(gsl::narrow<std::byte>(lsb));
+                auto const msb = gsl::narrow<std::byte>(instructions >> 8);
+                auto const lsb = gsl::narrow<std::byte>(instructions & 0xFF);
+                result.push_back(msb);
+                result.push_back(lsb);
             }(),
             ...
     );
