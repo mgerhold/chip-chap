@@ -43,6 +43,18 @@ static constexpr auto data_registers = std::array{
     return result;
 }
 
+[[nodiscard]] static std::vector<std::byte> combine_instructions(std::span<u16 const> const instructions) {
+    auto result = std::vector<std::byte>{};
+    result.reserve(instructions.size() * 2);
+    for (auto const instruction : instructions) {
+        auto const msb = gsl::narrow<std::byte>(instruction >> 8);
+        auto const lsb = gsl::narrow<std::byte>(instruction & 0xFF);
+        result.push_back(msb);
+        result.push_back(lsb);
+    }
+    return result;
+}
+
 TEST(ChissemblerTests, EmptySource) {
     auto const machine_code = chissembler::assemble("stdin"sv, ""sv);
     ASSERT_TRUE(machine_code.empty());
