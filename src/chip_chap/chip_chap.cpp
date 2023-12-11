@@ -176,6 +176,17 @@ void ChipChap::render_general_window() const {
     ImGui::Text("elapsed time: %.03f s", elapsed_seconds());
     ImGui::Text(" time source: %.03f s", m_time_source.elapsed_seconds());
     ImGui::Text("       steps: %zu", m_steps_executed);
+    if (m_emulator.is_halted()) {
+        ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 0, 0, 255));
+        if (static_cast<int>(elapsed_seconds() * 3) % 2 == 0) {
+            ImGui::Text("      halted: true");
+        } else {
+            ImGui::Text("      halted:");
+        }
+        ImGui::PopStyleColor();
+    } else {
+        ImGui::Text("      halted: false");
+    }
     ImGui::End();
 }
 
