@@ -5,7 +5,7 @@
 #include <chrono>
 #include <common/visitor.hpp>
 
-Application::Application() : m_window{ 800, 600, "Chip-Chap" } { }
+Application::Application() : m_window{ 1280, 720, "Chip-Chap" } { }
 
 void Application::run() {
     using Clock = std::chrono::steady_clock;
