@@ -172,3 +172,23 @@ TEST(ChissemblerTests, CopyFromOneRegisterIntoAnotherRegister) {
         }
     }
 }
+
+TEST(ChissemblerTests, AddImmediateToRegister) {
+    auto random = Random{};
+    for (auto&& [register_, register_name] : data_registers) {
+        auto lhs = random.u8_();
+        auto rhs = random.u8_();
+        auto source = std::format("copy {} {}\nadd {} {}\n", lhs, register_name, rhs, register_name);
+        auto const machine_code = chissembler::assemble("stdin", source);
+        ASSERT_EQ(
+                machine_code,
+                combine_instructions(
+                        gsl::narrow<u16>(0x6000 | (register_ << 8) | lhs),
+                        gsl::narrow<u16>(0x7000 | (register_ << 8) | rhs)
+                )
+        );
+
+        auto const state = execute(machine_code);
+        ASSERT_EQ(state.emulator.registers().at(register_), gsl::narrow_cast<u8>(lhs + rhs));
+    }
+}
