@@ -84,6 +84,32 @@ TEST(ChissemblerTests, CopyingInvalidImmediateFails) {
     );
 }
 
+TEST(ChissemblerTests, CopyingIntoImmediateFails) {
+    ASSERT_THROW(
+            {
+                try {
+                    auto const machine_code = chissembler::assemble("stdin"sv, "copy 1 2"sv);
+                } catch (EmitterError const& e) {
+                    ASSERT_STREQ(e.what(), "stdin:1:8: '2' is not a valid target for writing");
+                    throw;
+                }
+            },
+            EmitterError
+    );
+
+    ASSERT_THROW(
+            {
+                try {
+                    auto const machine_code = chissembler::assemble("stdin"sv, "copy VA 2"sv);
+                } catch (EmitterError const& e) {
+                    ASSERT_STREQ(e.what(), "stdin:1:9: '2' is not a valid target for writing");
+                    throw;
+                }
+            },
+            EmitterError
+    );
+}
+
 TEST(ChissemblerTests, CopyFromOneRegisterIntoAnotherRegister) {
     auto random = Random();
     for (auto&& [source_register, source_register_name] : data_registers) {
