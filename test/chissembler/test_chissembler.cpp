@@ -30,7 +30,7 @@ static constexpr auto data_registers = std::array{
 
 [[nodiscard]] static std::vector<std::byte> combine_instructions(std::convertible_to<u16> auto... instructions) {
     auto result = std::vector<std::byte>{};
-    result.reserve(sizeof...(instructions));
+    result.reserve(sizeof...(instructions) * 2);
     (
             [&] {
                 auto const msb = instructions >> 8;
