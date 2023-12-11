@@ -93,6 +93,6 @@ Token const& Emitter::advance() {
         return result;
     }
     throw EmitterError{
-        std::format("{}: '{}' is not a valid target for reading", current().source_location(), current().lexeme())
+        std::format("{}: '{}' is not a valid target for writing", current().source_location(), current().lexeme())
     };
 }
