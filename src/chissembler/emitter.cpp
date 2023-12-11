@@ -1,6 +1,8 @@
 #include "emitter.hpp"
+#include "../emulator/include/chip8/chip8.hpp"
 #include "errors.hpp"
 #include "utils.hpp"
+
 #include <sstream>
 
 [[nodiscard]] static u8 parse_u8(Token const& token) {

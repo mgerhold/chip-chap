@@ -3,3 +3,4 @@ include(GoogleTest)
 
 add_subdirectory(emulator)
 add_subdirectory(chissembler)
+add_subdirectory(mocks)

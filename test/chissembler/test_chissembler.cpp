@@ -1,10 +1,14 @@
 #include <array>
+#include <chip8/chip8.hpp>
 #include <chissembler/chissembler.hpp>
 #include <common/random.hpp>
 #include <common/types.hpp>
 #include <format>
 #include <gsl/gsl>
 #include <gtest/gtest.h>
+#include <mock_input_source.hpp>
+#include <mock_screen.hpp>
+#include <mock_time_source.hpp>
 #include <string_view>
 
 using namespace std::string_view_literals;
@@ -55,6 +59,38 @@ static constexpr auto data_registers = std::array{
     return result;
 }
 
+struct EmulatorState {
+    std::unique_ptr<MockScreen> screen;
+    std::unique_ptr<MockInputSource> input;
+    std::unique_ptr<MockTimeSource> time_source;
+    emulator::Chip8 emulator;
+
+    EmulatorState()
+        : screen{ std::make_unique<MockScreen>() },
+          input{ std::make_unique<MockInputSource>() },
+          time_source{ std::make_unique<MockTimeSource>() },
+          emulator{ *screen, *input, *time_source } { }
+};
+
+// clang-format off
+[[nodiscard]] static EmulatorState execute(
+    std::span<std::byte const> const machine_code,
+    usize const num_instructions_to_execute
+) { // clang-format on
+    auto state = EmulatorState{};
+    for (usize i = 0; i < machine_code.size(); ++i) {
+        state.emulator.write(gsl::narrow<u16>(0x200 + i), static_cast<u8>(machine_code[i]));
+    }
+    for (usize i = 0; i < num_instructions_to_execute; ++i) {
+        state.emulator.execute_next_instruction();
+    }
+    return state;
+}
+
+[[nodiscard]] static EmulatorState execute(std::span<std::byte const> const machine_code) {
+    return execute(machine_code, machine_code.size() / 2);
+}
+
 TEST(ChissemblerTests, EmptySource) {
     auto const machine_code = chissembler::assemble("stdin"sv, ""sv);
     ASSERT_TRUE(machine_code.empty());
@@ -67,6 +103,9 @@ TEST(ChissemblerTests, CopyConstantIntoDataRegister) {
         auto const instruction = std::format("copy {} {}", value, register_name);
         auto const machine_code = chissembler::assemble("stdin"sv, instruction);
         ASSERT_EQ(machine_code, combine_instructions(0x6000 | (register_ << 8) | value));
+        auto const state = execute(machine_code);
+
+        ASSERT_EQ(state.emulator.registers().at(register_), value);
     }
 }
 
@@ -126,5 +165,10 @@ TEST(ChissemblerTests, CopyFromOneRegisterIntoAnotherRegister) {
         }
         auto const machine_code = chissembler::assemble("stdin", source);
         ASSERT_EQ(machine_code, combine_instructions(instructions));
+
+        auto const state = execute(machine_code);
+        for (auto&& [register_, name] : data_registers) {
+            ASSERT_EQ(state.emulator.registers().at(register_), value);
+        }
     }
 }
