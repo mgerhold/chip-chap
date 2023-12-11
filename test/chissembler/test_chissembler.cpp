@@ -13,6 +13,15 @@
 
 using namespace std::string_view_literals;
 
+#ifdef NDEBUG
+#define DEBUG_LOG
+#else
+#define DEBUG_LOG(x)                           \
+    do {                                       \
+        std::cerr << #x << " = " << x << '\n'; \
+    } while (false)
+#endif
+
 static constexpr auto data_registers = std::array{
     std::tuple{  u8{ 0 }, "V0"sv },
     std::tuple{  u8{ 1 }, "V1"sv },
@@ -190,5 +199,58 @@ TEST(ChissemblerTests, AddImmediateToRegister) {
 
         auto const state = execute(machine_code);
         ASSERT_EQ(state.emulator.registers().at(register_), gsl::narrow_cast<u8>(lhs + rhs));
+    }
+}
+
+TEST(ChissemblerTests, AddRegisterToRegister) {
+    auto random = Random{};
+    for (auto&& [source_register, source_register_name] : data_registers) {
+        // summing changed the value of VF, therefore we skip operating on that register
+        if (source_register == 0xF) {
+            continue;
+        }
+        for (auto&& [destination_register, destination_register_name] : data_registers) {
+            if (destination_register == 0xF) {
+                continue;
+            }
+            auto const lhs = random.u8_();
+            auto const rhs = random.u8_();
+            auto const source = std::format(
+                    "copy {} {}\ncopy{} {}\nadd {} {}\n",
+                    lhs,
+                    source_register_name,
+                    rhs,
+                    destination_register_name,
+                    source_register_name,
+                    destination_register_name
+            );
+
+            auto const machine_code = chissembler::assemble("stdin", source);
+            ASSERT_EQ(
+                    machine_code,
+                    combine_instructions(
+                            gsl::narrow<u16>(0x6000 | (source_register << 8) | lhs),
+                            gsl::narrow<u16>(0x6000 | (destination_register << 8) | rhs),
+                            gsl::narrow<u16>(0x8004 | (destination_register << 8) | (source_register << 4))
+                    )
+            );
+
+            DEBUG_LOG(source_register_name);
+            DEBUG_LOG(destination_register_name);
+            DEBUG_LOG(static_cast<int>(lhs));
+            DEBUG_LOG(static_cast<int>(rhs));
+            DEBUG_LOG(static_cast<int>(static_cast<u8>(lhs + rhs)));
+
+            auto const state = execute(machine_code);
+
+            auto const sum = (source_register == destination_register ? 2 * rhs : lhs + rhs);
+            auto const carry = (sum > static_cast<int>(std::numeric_limits<u8>::max()));
+
+            if (source_register != destination_register) {
+                ASSERT_EQ(state.emulator.registers().at(source_register), lhs);
+            }
+            ASSERT_EQ(state.emulator.registers().at(destination_register), gsl::narrow_cast<u8>(sum));
+            ASSERT_EQ(state.emulator.registers().at(0xF), static_cast<u8>(carry));
+        }
     }
 }
