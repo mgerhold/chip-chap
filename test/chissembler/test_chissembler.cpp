@@ -185,9 +185,17 @@ TEST(ChissemblerTests, CopyFromOneRegisterIntoAnotherRegister) {
 TEST(ChissemblerTests, AddImmediateToRegister) {
     auto random = Random{};
     for (auto&& [register_, register_name] : data_registers) {
-        auto lhs = random.u8_();
-        auto rhs = random.u8_();
-        auto source = std::format("copy {} {}\nadd {} {}\n", lhs, register_name, rhs, register_name);
+        auto const lhs = random.u8_();
+        auto const rhs = random.u8_();
+        auto const source = std::format(
+                R"(copy {} {}
+add {} {}
+)",
+                lhs,
+                register_name,
+                rhs,
+                register_name
+        );
         auto const machine_code = chissembler::assemble("stdin", source);
         ASSERT_EQ(
                 machine_code,
@@ -216,7 +224,10 @@ TEST(ChissemblerTests, AddRegisterToRegister) {
             auto const lhs = random.u8_();
             auto const rhs = random.u8_();
             auto const source = std::format(
-                    "copy {} {}\ncopy{} {}\nadd {} {}\n",
+                    R"(copy {} {}
+copy{} {}
+add {} {}
+)",
                     lhs,
                     source_register_name,
                     rhs,
