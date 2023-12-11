@@ -83,3 +83,22 @@ TEST(ChissemblerTests, CopyingInvalidImmediateFails) {
             EmitterError
     );
 }
+
+TEST(ChissemblerTests, CopyFromOneRegisterIntoAnotherRegister) {
+    auto random = Random();
+    for (auto&& [source_register, source_register_name] : data_registers) {
+        auto const value = random.u8_();
+        auto source = std::string{};
+        auto instructions = std::vector<u16>{};
+        // store random value in source register
+        source += std::format("copy {} {}\n", value, source_register_name);
+        instructions.push_back(gsl::narrow<u16>(0x6000 | (source_register << 8) | value));
+        for (auto&& [destination_register, destination_register_name] : data_registers) {
+            // copy from source register to target register
+            instructions.push_back(gsl::narrow<u16>(0x8000 | (destination_register << 8) | (source_register << 4)));
+            source += std::format("copy {} {}\n", source_register_name, destination_register_name);
+        }
+        auto const machine_code = chissembler::assemble("stdin", source);
+        ASSERT_EQ(machine_code, combine_instructions(instructions));
+    }
+}
