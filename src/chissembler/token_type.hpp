@@ -5,5 +5,6 @@ enum class TokenType {
     Register,
     Identifier,
     Copy,
+    Add,
     EndOfInput,
 };

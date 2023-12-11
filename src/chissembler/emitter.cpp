@@ -44,6 +44,13 @@
                 instructions.push_back(std::make_unique<instruction::Copy>(source, destination));
                 break;
             }
+            case TokenType::Add: {
+                advance();
+                auto const source = read_target();
+                auto const destination = write_target();
+                instructions.push_back(std::make_unique<instruction::Add>(source, destination));
+                break;
+            }
             default:
                 throw EmitterError{ std::format("{}: unexpected token", current().source_location()) };
                 break;

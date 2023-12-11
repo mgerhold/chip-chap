@@ -50,6 +50,10 @@
                 tokens.emplace_back(TokenType::Copy, source_location);
                 continue;
             }
+            if (lexeme == "add") {
+                tokens.emplace_back(TokenType::Add, source_location);
+                continue;
+            }
             tokens.emplace_back(TokenType::Identifier, source_location);
             continue;
         }

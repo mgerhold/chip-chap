@@ -30,4 +30,16 @@ namespace instruction {
         void append(std::vector<std::byte>& machine_code) const override;
     };
 
+    class Add final : public BasicInstruction {
+    private:
+        Target m_source;
+        Target m_destination;
+
+    public:
+        Add(Target const m_source, Target const m_destination)
+            : m_source{ m_source },
+              m_destination{ m_destination } { }
+        void append(std::vector<std::byte>& machine_code) const override;
+    };
+
 } // namespace instruction
