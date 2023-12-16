@@ -11,7 +11,7 @@
     auto result = u16{}; // cannot be u8, because the string stream would then interpret it as a char
     stream >> result;
     if (not stream or not stream.eof() or result > std::numeric_limits<u8>::max()) {
-        throw EmitterError{
+        throw chissembler::EmitterError{
             std::format("{}: '{}' is not a valid 8 bit value", token.source_location(), token.lexeme())
         };
     }
@@ -21,7 +21,7 @@
 [[nodiscard]] static DataRegister parse_data_register(Token const& token) {
     if (token.lexeme().length() != 2 or token.lexeme().front() != 'V'
         or not is_valid_register_char(token.lexeme().back())) {
-        throw EmitterError{
+        throw chissembler::EmitterError{
             std::format("{}: '{}' does not name a valid data register", token.source_location(), token.lexeme())
         };
     }
@@ -52,7 +52,7 @@
                 break;
             }
             default:
-                throw EmitterError{ std::format("{}: unexpected token", current().source_location()) };
+                throw chissembler::EmitterError{ std::format("{}: unexpected token", current().source_location()) };
                 break;
         }
     }
@@ -90,7 +90,7 @@ Token const& Emitter::advance() {
         advance();
         return result;
     }
-    throw EmitterError{
+    throw chissembler::EmitterError{
         std::format("{}: '{}' is not a valid target for reading", current().source_location(), current().lexeme())
     };
 }
@@ -101,7 +101,7 @@ Token const& Emitter::advance() {
         advance();
         return result;
     }
-    throw EmitterError{
+    throw chissembler::EmitterError{
         std::format("{}: '{}' is not a valid target for writing", current().source_location(), current().lexeme())
     };
 }
