@@ -1,4 +1,5 @@
 #include "lexer.hpp"
+#include "errors.hpp"
 #include "utils.hpp"
 #include <cctype>
 
@@ -13,6 +14,11 @@
 ) { // clang-format on
     auto tokens = std::vector<Token>{};
     while (not is_at_end()) {
+        if (current() == '\n') {
+            tokens.emplace_back(TokenType::Newline, SourceLocation{ filename, source, m_index, 1 });
+            advance();
+            continue;
+        }
         if (std::isspace(static_cast<unsigned char>(current()))) {
             advance();
             continue;
@@ -57,6 +63,8 @@
             tokens.emplace_back(TokenType::Identifier, source_location);
             continue;
         }
+
+        throw chissembler::LexerError{ "source contains invalid characters" };
     }
     tokens.emplace_back(TokenType::EndOfInput, SourceLocation{ filename, source, source.length() - 1, 1 });
     return tokens;

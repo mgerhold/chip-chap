@@ -109,7 +109,7 @@ TEST(ChissemblerTests, CopyConstantIntoDataRegister) {
     auto random = Random{};
     for (auto&& [register_, register_name] : data_registers) {
         auto const value = random.u8_();
-        auto const instruction = std::format("copy {} {}", value, register_name);
+        auto const instruction = std::format("copy {} {}\n", value, register_name);
         auto const machine_code = chissembler::assemble("stdin"sv, instruction);
         ASSERT_EQ(machine_code, combine_instructions(0x6000 | (register_ << 8) | value));
         auto const state = execute(machine_code);

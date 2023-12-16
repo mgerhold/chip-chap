@@ -4,10 +4,6 @@
 #include <common/types.hpp>
 #include <stdexcept>
 
-class LexerError final : public std::runtime_error {
-    using std::runtime_error::runtime_error;
-};
-
 class Lexer final {
 private:
     std::string_view m_filename;

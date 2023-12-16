@@ -19,6 +19,9 @@
   }, {
     "name" : "gtest",
     "version>=" : "1.13.0"
+  }, {
+    "name" : "magic-enum",
+    "version>=" : "0.9.3"
   } ],
   "builtin-baseline" : "4a600e9fea71bd7872080cbb716797e04d30e6d3"
 }

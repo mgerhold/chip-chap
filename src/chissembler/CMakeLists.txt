@@ -22,6 +22,8 @@ target_link_libraries(chissembler
         common
 )
 
+target_link_system_libraries(chissembler PRIVATE magic_enum::magic_enum)
+
 target_include_directories(chissembler
         INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/include

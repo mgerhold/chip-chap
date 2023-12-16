@@ -14,10 +14,12 @@
         auto machine_code = chissembler::assemble("stdin", source);
     } catch (chissembler::EmitterError const&) {
         // may happen
+    } catch (chissembler::LexerError const&) {
+        // may also happen
     } catch (std::exception const&) {
-        return 1;
+        return -1;
     } catch (...) {
-        return 1;
+        return -1;
     }
     return 0;
 }
