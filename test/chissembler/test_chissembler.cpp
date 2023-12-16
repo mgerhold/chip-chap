@@ -123,12 +123,12 @@ TEST(ChissemblerTests, CopyingInvalidImmediateFails) {
             {
                 try {
                     auto const machine_code = chissembler::assemble("stdin"sv, "copy 256 VA"sv);
-                } catch (EmitterError const& e) {
+                } catch (chissembler::EmitterError const& e) {
                     ASSERT_STREQ(e.what(), "stdin:1:6: '256' is not a valid 8 bit value");
                     throw;
                 }
             },
-            EmitterError
+            chissembler::EmitterError
     );
 }
 
@@ -137,24 +137,24 @@ TEST(ChissemblerTests, CopyingIntoImmediateFails) {
             {
                 try {
                     auto const machine_code = chissembler::assemble("stdin"sv, "copy 1 2"sv);
-                } catch (EmitterError const& e) {
+                } catch (chissembler::EmitterError const& e) {
                     ASSERT_STREQ(e.what(), "stdin:1:8: '2' is not a valid target for writing");
                     throw;
                 }
             },
-            EmitterError
+            chissembler::EmitterError
     );
 
     ASSERT_THROW(
             {
                 try {
                     auto const machine_code = chissembler::assemble("stdin"sv, "copy VA 2"sv);
-                } catch (EmitterError const& e) {
+                } catch (chissembler::EmitterError const& e) {
                     ASSERT_STREQ(e.what(), "stdin:1:9: '2' is not a valid target for writing");
                     throw;
                 }
             },
-            EmitterError
+            chissembler::EmitterError
     );
 }
 
