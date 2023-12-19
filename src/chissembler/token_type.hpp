@@ -7,6 +7,8 @@ enum class TokenType {
     Copy,
     Add,
     Colon,
+    Jump,
+    Plus,
     Newline,
     EndOfInput,
 };

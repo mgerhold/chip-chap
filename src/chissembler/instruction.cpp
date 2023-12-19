@@ -1,6 +1,7 @@
 #include "instruction.hpp"
 
 
+#include "common/utils.hpp"
 #include "errors.hpp"
 
 #include <cassert>
@@ -14,9 +15,22 @@ static void append_instruction(EmitterState& state, u16 const instruction) {
 }
 
 void instruction::Label::append(EmitterState& state) const {
-    auto&& [iterator, inserted] = state.labels().insert({ m_name, state.address() });
+    auto&& [iterator, inserted] = state.labels().insert({ std::string{ m_label_token.lexeme() }, state.address() });
     if (not inserted) {
-        throw chissembler::EmitterError{ std::format("duplicate label name '{}'", m_name) };
+        throw chissembler::EmitterError{
+            std::format("{}: duplicate label name '{}'", m_label_token.source_location(), m_label_token.lexeme())
+        };
+    }
+}
+
+void instruction::Jump::append(EmitterState& state) const {
+    state.address_placeholders().emplace_back(state.address(), m_target);
+    if (is_one_of<u16, std::string>(m_target)) {
+        append_instruction(state, 0x1000);
+    } else if (is_one_of<std::tuple<u16, V0Offset>, std::tuple<std::string, V0Offset>>(m_target)) {
+        append_instruction(state, 0xB000);
+    } else {
+        assert(false and "invalid variant");
     }
 }
 

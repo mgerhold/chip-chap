@@ -23,6 +23,7 @@ private:
     [[nodiscard]] Token const& current() const;
     [[nodiscard]] Token const& peek(usize offset = 1) const;
     Token const& advance();
+    [[nodiscard]] Optional<Token const&> try_consume(TokenType type);
 
     Token const& expect(std::convertible_to<TokenType> auto... token_types) {
         static_assert(sizeof...(token_types) > 0);
@@ -45,7 +46,8 @@ private:
             return *result;
         }
         throw chissembler::EmitterError{ std::format(
-                "expected token type {}, got {} instead",
+                "{}: expected token type '{}', got '{}' instead",
+                current().source_location(),
                 allowed_tokens,
                 magic_enum::enum_name(current().type())
         ) };
@@ -53,4 +55,5 @@ private:
 
     [[nodiscard]] Target read_target();
     [[nodiscard]] Target write_target();
+    [[nodiscard]] JumpTarget jump_target();
 };

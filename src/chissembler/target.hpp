@@ -1,6 +1,7 @@
 #pragma once
 
 #include <common/types.hpp>
+#include <string>
 #include <variant>
 
 struct U8Immediate {
@@ -27,3 +28,7 @@ enum class DataRegister : u8 {
 };
 
 using Target = std::variant<U8Immediate, DataRegister>;
+
+struct V0Offset {};
+
+using JumpTarget = std::variant<u16, std::tuple<u16, V0Offset>, std::string, std::tuple<std::string, V0Offset>>;

@@ -1,11 +1,13 @@
 #pragma once
 
+#include "emitter_state.hpp"
 #include "target.hpp"
+#include "token.hpp"
+
 #include <common/visitor.hpp>
 #include <gsl/gsl>
 #include <memory>
 #include <vector>
-#include "emitter_state.hpp"
 
 namespace instruction {
     class BasicInstruction;
@@ -23,10 +25,19 @@ namespace instruction {
 
     class Label final : public BasicInstruction {
     private:
-        std::string m_name;
+        Token m_label_token;
 
     public:
-        explicit Label(std::string name) : m_name{ std::move(name) } { }
+        explicit Label(Token const& label_token) : m_label_token{ label_token } { }
+        void append(EmitterState& state) const override;
+    };
+
+    class Jump final : public BasicInstruction {
+    private:
+        JumpTarget m_target;
+
+    public:
+        explicit Jump(JumpTarget target) : m_target{ std::move(target) } { }
         void append(EmitterState& state) const override;
     };
 

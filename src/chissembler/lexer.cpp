@@ -26,6 +26,12 @@
             continue;
         }
 
+        if (current() == '+') {
+            tokens.emplace_back(TokenType::Plus, SourceLocation{ filename, source, m_index, 1 });
+            advance();
+            continue;
+        }
+
         if (std::isspace(static_cast<unsigned char>(current()))) {
             advance();
             continue;
@@ -54,7 +60,7 @@
         if (std::isalpha(static_cast<unsigned char>(current()))) {
             auto const start_index = m_index;
             advance();
-            while (not is_at_end() and (current() == '_' or std::isalpha(static_cast<unsigned char>(current())))) {
+            while (not is_at_end() and (current() == '_' or std::isalnum(static_cast<unsigned char>(current())))) {
                 advance();
             }
             auto const source_location = SourceLocation{ filename, source, start_index, m_index - start_index };
@@ -67,11 +73,17 @@
                 tokens.emplace_back(TokenType::Add, source_location);
                 continue;
             }
+            if (lexeme == "jump") {
+                tokens.emplace_back(TokenType::Jump, source_location);
+                continue;
+            }
             tokens.emplace_back(TokenType::Identifier, source_location);
             continue;
         }
 
-        throw chissembler::LexerError{ "source contains invalid characters" };
+        throw chissembler::LexerError{
+            std::format("{}: source contains invalid characters", SourceLocation{ filename, source, m_index, 1 })
+        };
     }
     tokens.emplace_back(TokenType::EndOfInput, SourceLocation{ filename, source, source.length() - 1, 1 });
     return tokens;

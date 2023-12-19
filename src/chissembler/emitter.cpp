@@ -1,5 +1,6 @@
 #include "emitter.hpp"
 #include "../emulator/include/chip8/chip8.hpp"
+#include "common/utils.hpp"
 #include "errors.hpp"
 #include "utils.hpp"
 
@@ -19,6 +20,7 @@
 }
 
 [[nodiscard]] static DataRegister parse_data_register(Token const& token) {
+    assert(token.type() == TokenType::Register);
     if (token.lexeme().length() != 2 or token.lexeme().front() != 'V'
         or not is_valid_register_char(token.lexeme().back())) {
         throw chissembler::EmitterError{
@@ -53,11 +55,18 @@
                 instructions.push_back(std::make_unique<instruction::Add>(source, destination));
                 break;
             }
+            case TokenType::Jump: {
+                advance();
+                auto target = jump_target();
+                expect(TokenType::Newline);
+                instructions.push_back(std::make_unique<instruction::Jump>(std::move(target)));
+                break;
+            }
             case TokenType::Identifier: {
-                auto label_name = std::string{ advance().lexeme() };
+                auto const label_token = advance();
                 expect(TokenType::Colon);
                 expect(TokenType::Newline);
-                instructions.push_back(std::make_unique<instruction::Label>(std::move(label_name)));
+                instructions.push_back(std::make_unique<instruction::Label>(label_token));
                 break;
             }
             default:
@@ -88,6 +97,13 @@ Token const& Emitter::advance() {
     return result;
 }
 
+[[nodiscard]] Optional<Token const&> Emitter::try_consume(TokenType const type) {
+    if (current().type() != type) {
+        return none;
+    }
+    return advance();
+}
+
 [[nodiscard]] Target Emitter::read_target() {
     if (current().type() == TokenType::IntegerLiteral) {
         auto const result = U8Immediate{ parse_u8(current()) };
@@ -112,5 +128,46 @@ Token const& Emitter::advance() {
     }
     throw chissembler::EmitterError{
         std::format("{}: '{}' is not a valid target for writing", current().source_location(), current().lexeme())
+    };
+}
+
+[[nodiscard]] JumpTarget Emitter::jump_target() {
+    auto const try_parse_offset = [&]() -> bool {
+        if (not try_consume(TokenType::Plus).has_value()) {
+            return false;
+        }
+        auto const& register_token = current();
+        auto const data_register = parse_data_register(expect(TokenType::Register));
+        if (data_register != DataRegister::V0) {
+            throw chissembler::EmitterError{
+                std::format("{}: only 'V0' is allowed as jump offset", register_token.source_location())
+            };
+        }
+        return true;
+    };
+
+    if (current().type() == TokenType::IntegerLiteral) {
+        auto const address = to_int<u16>(current().lexeme());
+        if (not address.has_value() or (address.value() & 0xF000) != 0) {
+            throw chissembler::EmitterError{ std::format("'{}' is not a valid address", current().lexeme()) };
+        }
+        advance();
+        if (not try_parse_offset()) {
+            return address.value();
+        }
+        return std::tuple{ address.value(), V0Offset{} };
+    }
+
+    if (current().type() == TokenType::Identifier) {
+        auto label_name = std::string{ current().lexeme() };
+        advance();
+        if (not try_parse_offset()) {
+            return std::move(label_name);
+        }
+        return std::tuple{ std::move(label_name), V0Offset{} };
+    }
+
+    throw chissembler::EmitterError{
+        std::format("token of type '{}' is not a valid jump target", magic_enum::enum_name(current().type()))
     };
 }
