@@ -19,6 +19,13 @@
             advance();
             continue;
         }
+
+        if (current() == ':') {
+            tokens.emplace_back(TokenType::Colon, SourceLocation{ filename, source, m_index, 1 });
+            advance();
+            continue;
+        }
+
         if (std::isspace(static_cast<unsigned char>(current()))) {
             advance();
             continue;
