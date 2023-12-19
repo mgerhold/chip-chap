@@ -54,7 +54,7 @@
         if (std::isalpha(static_cast<unsigned char>(current()))) {
             auto const start_index = m_index;
             advance();
-            while (not is_at_end() and std::isalpha(static_cast<unsigned char>(current()))) {
+            while (not is_at_end() and (current() == '_' or std::isalpha(static_cast<unsigned char>(current())))) {
                 advance();
             }
             auto const source_location = SourceLocation{ filename, source, start_index, m_index - start_index };
