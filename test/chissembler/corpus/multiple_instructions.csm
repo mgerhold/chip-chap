@@ -1,0 +1,6 @@
+copy 42 V0
+copy 20 V2
+copy V0 V3
+copy V3 V4
+add 20 V4
+add V2 V4
