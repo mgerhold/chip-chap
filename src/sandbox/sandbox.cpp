@@ -1,4 +1,5 @@
 #include <chissembler/chissembler.hpp>
+#include <iostream>
 #include <string_view>
 
 int main() {
@@ -10,5 +11,11 @@ one_more:
 later:
     add 1 V1
 )"sv;
-    auto machine_code = chissembler::assemble("stdin", source);
+    try {
+        auto machine_code = chissembler::assemble("stdin", source);
+    } catch (chissembler::LexerError& e) {
+        std::cerr << e.what() << '\n';
+    } catch (chissembler::EmitterError& e) {
+        std::cerr << e.what() << '\n';
+    }
 }
