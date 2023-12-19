@@ -13,6 +13,7 @@ add_library(chissembler STATIC
         emitter.hpp
         utils.hpp
         include/chissembler/errors.hpp
+        emitter_state.hpp
 )
 
 target_link_libraries(chissembler

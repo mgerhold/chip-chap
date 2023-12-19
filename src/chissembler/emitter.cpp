@@ -53,6 +53,13 @@
                 instructions.push_back(std::make_unique<instruction::Add>(source, destination));
                 break;
             }
+            case TokenType::Identifier: {
+                auto label_name = std::string{ advance().lexeme() };
+                expect(TokenType::Colon);
+                expect(TokenType::Newline);
+                instructions.push_back(std::make_unique<instruction::Label>(std::move(label_name)));
+                break;
+            }
             default:
                 throw chissembler::EmitterError{ std::format("{}: unexpected token", current().source_location()) };
                 break;

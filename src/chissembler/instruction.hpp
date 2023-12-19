@@ -5,6 +5,7 @@
 #include <gsl/gsl>
 #include <memory>
 #include <vector>
+#include "emitter_state.hpp"
 
 namespace instruction {
     class BasicInstruction;
@@ -17,7 +18,16 @@ namespace instruction {
     class BasicInstruction {
     public:
         virtual ~BasicInstruction() = default;
-        virtual void append(std::vector<std::byte>& machine_code) const = 0;
+        virtual void append(EmitterState& state) const = 0;
+    };
+
+    class Label final : public BasicInstruction {
+    private:
+        std::string m_name;
+
+    public:
+        explicit Label(std::string name) : m_name{ std::move(name) } { }
+        void append(EmitterState& state) const override;
     };
 
     class Copy final : public BasicInstruction {
@@ -27,7 +37,7 @@ namespace instruction {
 
     public:
         Copy(Target const& source, Target const& destination) : m_source{ source }, m_destination{ destination } { }
-        void append(std::vector<std::byte>& machine_code) const override;
+        void append(EmitterState& state) const override;
     };
 
     class Add final : public BasicInstruction {
@@ -37,7 +47,7 @@ namespace instruction {
 
     public:
         Add(Target const& source, Target const& destination) : m_source{ source }, m_destination{ destination } { }
-        void append(std::vector<std::byte>& machine_code) const override;
+        void append(EmitterState& state) const override;
     };
 
 } // namespace instruction
