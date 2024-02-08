@@ -81,4 +81,24 @@ namespace instruction {
         void append(EmitterState& state) const override;
     };
 
+    class Or final : public BasicInstruction {
+    private:
+        Target m_source;
+        Target m_destination;
+
+    public:
+        Or(Target const source, Target const destination) : m_source{ source }, m_destination{ destination } { }
+        void append(EmitterState& state) const override;
+    };
+
+    class Xor final : public BasicInstruction {
+    private:
+        Target m_source;
+        Target m_destination;
+
+    public:
+        Xor(Target const source, Target const destination) : m_source{ source }, m_destination{ destination } { }
+        void append(EmitterState& state) const override;
+    };
+
 } // namespace instruction

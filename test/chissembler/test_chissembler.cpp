@@ -356,3 +356,41 @@ and V5 V6
     EXPECT_EQ(0x2, state.emulator.registers().at(0x6));
     EXPECT_EQ(0xA, state.emulator.registers().at(0x5));
 }
+
+TEST(ChissemblerTests, BitwiseOr) {
+    static constexpr auto source = R"(copy 8 V5
+copy 4 V6
+or V5 V6
+)";
+    auto const machine_code = chissembler::assemble("stdin", source);
+    EXPECT_EQ(
+            machine_code,
+            combine_instructions(
+                u16{ 0x6508 },
+                u16{ 0x6604 },
+                u16{ 0x8651 }
+            )
+    );
+    auto const state = execute(machine_code);
+    EXPECT_EQ(0b1100, state.emulator.registers().at(0x6));
+    EXPECT_EQ(8, state.emulator.registers().at(0x5));
+}
+
+TEST(ChissemblerTests, BitwiseXor) {
+    static constexpr auto source = R"(copy 14 V5
+copy 10 V6
+xor V5 V6
+)";
+    auto const machine_code = chissembler::assemble("stdin", source);
+    EXPECT_EQ(
+            machine_code,
+            combine_instructions(
+                u16{ 0x650E },
+                u16{ 0x660A },
+                u16{ 0x8653 }
+            )
+    );
+    auto const state = execute(machine_code);
+    EXPECT_EQ(0b0100, state.emulator.registers().at(0x6));
+    EXPECT_EQ(14, state.emulator.registers().at(0x5));
+}

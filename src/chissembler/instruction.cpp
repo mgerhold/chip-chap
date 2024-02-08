@@ -157,3 +157,51 @@ void instruction::And::append(EmitterState& state) const {
             }
     );
 }
+
+void instruction::Or::append(EmitterState& state) const {
+    assert(not std::holds_alternative<U8Immediate>(m_destination)
+           and "cannot assign result of bitwise operation into an immediate");
+    assert(not std::holds_alternative<U8Immediate>(m_source)
+           and "cannot use immediate as source value for bitwise operation");
+    visit(
+            m_source,
+            [&](U8Immediate const) { std::unreachable(); },
+            [&](DataRegister const source_register) {
+                visit(
+                        m_destination,
+                        [&](U8Immediate const) { std::unreachable(); },
+                        [&](DataRegister const destination_register) {
+                            auto const opcode = gsl::narrow<u16>(
+                                    0x8001 | (std::to_underlying(destination_register) << 8)
+                                    | (std::to_underlying(source_register) << 4)
+                            );
+                            append_instruction(state, opcode);
+                        }
+                );
+            }
+    );
+}
+
+void instruction::Xor::append(EmitterState& state) const {
+    assert(not std::holds_alternative<U8Immediate>(m_destination)
+           and "cannot assign result of bitwise operation into an immediate");
+    assert(not std::holds_alternative<U8Immediate>(m_source)
+           and "cannot use immediate as source value for bitwise operation");
+    visit(
+            m_source,
+            [&](U8Immediate const) { std::unreachable(); },
+            [&](DataRegister const source_register) {
+                visit(
+                        m_destination,
+                        [&](U8Immediate const) { std::unreachable(); },
+                        [&](DataRegister const destination_register) {
+                            auto const opcode = gsl::narrow<u16>(
+                                    0x8003 | (std::to_underlying(destination_register) << 8)
+                                    | (std::to_underlying(source_register) << 4)
+                            );
+                            append_instruction(state, opcode);
+                        }
+                );
+            }
+    );
+}

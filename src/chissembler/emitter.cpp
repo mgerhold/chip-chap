@@ -71,6 +71,22 @@
                 instructions.push_back(std::make_unique<instruction::And>(source, destination));
                 break;
             }
+            case TokenType::Or: {
+                advance();
+                auto const source = write_target(); // immediates are not allowed as sources
+                auto const destination = write_target();
+                expect(TokenType::Newline);
+                instructions.push_back(std::make_unique<instruction::Or>(source, destination));
+                break;
+            }
+            case TokenType::Xor: {
+                advance();
+                auto const source = write_target(); // immediates are not allowed as sources
+                auto const destination = write_target();
+                expect(TokenType::Newline);
+                instructions.push_back(std::make_unique<instruction::Xor>(source, destination));
+                break;
+            }
             case TokenType::Jump: {
                 advance();
                 auto target = jump_target();

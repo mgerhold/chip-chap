@@ -8,6 +8,8 @@ enum class TokenType {
     Add,
     Sub,
     And,
+    Or,
+    Xor,
     Colon,
     Jump,
     Plus,

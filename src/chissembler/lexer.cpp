@@ -81,6 +81,14 @@
                 tokens.emplace_back(TokenType::And, source_location);
                 continue;
             }
+            if (lexeme == "or") {
+                tokens.emplace_back(TokenType::Or, source_location);
+                continue;
+            }
+            if (lexeme == "xor") {
+                tokens.emplace_back(TokenType::Xor, source_location);
+                continue;
+            }
             if (lexeme == "jump") {
                 tokens.emplace_back(TokenType::Jump, source_location);
                 continue;
