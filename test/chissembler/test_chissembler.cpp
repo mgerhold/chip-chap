@@ -111,10 +111,10 @@ TEST(ChissemblerTests, CopyConstantIntoDataRegister) {
         auto const value = random.u8_();
         auto const instruction = std::format("copy {} {}\n", value, register_name);
         auto const machine_code = chissembler::assemble("stdin"sv, instruction);
-        ASSERT_EQ(machine_code, combine_instructions(0x6000 | (register_ << 8) | value));
+        EXPECT_EQ(machine_code, combine_instructions(0x6000 | (register_ << 8) | value));
         auto const state = execute(machine_code);
 
-        ASSERT_EQ(state.emulator.registers().at(register_), value);
+        EXPECT_EQ(state.emulator.registers().at(register_), value);
     }
 }
 
@@ -173,11 +173,11 @@ TEST(ChissemblerTests, CopyFromOneRegisterIntoAnotherRegister) {
             source += std::format("copy {} {}\n", source_register_name, destination_register_name);
         }
         auto const machine_code = chissembler::assemble("stdin", source);
-        ASSERT_EQ(machine_code, combine_instructions(instructions));
+        EXPECT_EQ(machine_code, combine_instructions(instructions));
 
         auto const state = execute(machine_code);
         for (auto&& [register_, name] : data_registers) {
-            ASSERT_EQ(state.emulator.registers().at(register_), value);
+            EXPECT_EQ(state.emulator.registers().at(register_), value);
         }
     }
 }
@@ -197,7 +197,7 @@ add {} {}
                 register_name
         );
         auto const machine_code = chissembler::assemble("stdin", source);
-        ASSERT_EQ(
+        EXPECT_EQ(
                 machine_code,
                 combine_instructions(
                         gsl::narrow<u16>(0x6000 | (register_ << 8) | lhs),
@@ -206,7 +206,7 @@ add {} {}
         );
 
         auto const state = execute(machine_code);
-        ASSERT_EQ(state.emulator.registers().at(register_), gsl::narrow_cast<u8>(lhs + rhs));
+        EXPECT_EQ(state.emulator.registers().at(register_), gsl::narrow_cast<u8>(lhs + rhs));
     }
 }
 
@@ -237,7 +237,7 @@ add {} {}
             );
 
             auto const machine_code = chissembler::assemble("stdin", source);
-            ASSERT_EQ(
+            EXPECT_EQ(
                     machine_code,
                     combine_instructions(
                             gsl::narrow<u16>(0x6000 | (source_register << 8) | lhs),
@@ -252,10 +252,10 @@ add {} {}
             auto const carry = (sum > static_cast<int>(std::numeric_limits<u8>::max()));
 
             if (source_register != destination_register) {
-                ASSERT_EQ(state.emulator.registers().at(source_register), lhs);
+                EXPECT_EQ(state.emulator.registers().at(source_register), lhs);
             }
-            ASSERT_EQ(state.emulator.registers().at(destination_register), gsl::narrow_cast<u8>(sum));
-            ASSERT_EQ(state.emulator.registers().at(0xF), static_cast<u8>(carry));
+            EXPECT_EQ(state.emulator.registers().at(destination_register), gsl::narrow_cast<u8>(sum));
+            EXPECT_EQ(state.emulator.registers().at(0xF), static_cast<u8>(carry));
         }
     }
 }
@@ -266,7 +266,7 @@ copy 2 V6
 sub V6 V5
 )";
     auto const machine_code = chissembler::assemble("stdin", source);
-    ASSERT_EQ(
+    EXPECT_EQ(
             machine_code,
             combine_instructions(
                 u16{ 0x652C },
@@ -277,9 +277,9 @@ sub V6 V5
 
     auto const state = execute(machine_code);
 
-    ASSERT_EQ(42, state.emulator.registers().at(0x5));
-    ASSERT_EQ(2, state.emulator.registers().at(0x6));
-    ASSERT_EQ(1, state.emulator.registers().at(0xF)); // no borrow
+    EXPECT_EQ(42, state.emulator.registers().at(0x5));
+    EXPECT_EQ(2, state.emulator.registers().at(0x6));
+    EXPECT_EQ(1, state.emulator.registers().at(0xF)); // no borrow
 }
 
 TEST(ChissemblerTests, SubtractRegisterFromRegisterWithBorrow) {
@@ -288,7 +288,7 @@ copy 6 V6
 sub V6 V5
 )";
     auto const machine_code = chissembler::assemble("stdin", source);
-    ASSERT_EQ(
+    EXPECT_EQ(
             machine_code,
             combine_instructions(
                 u16{ 0x6504 },
@@ -299,9 +299,9 @@ sub V6 V5
 
     auto const state = execute(machine_code);
 
-    ASSERT_EQ(254, state.emulator.registers().at(0x5));
-    ASSERT_EQ(6, state.emulator.registers().at(0x6));
-    ASSERT_EQ(0, state.emulator.registers().at(0xF)); // borrow
+    EXPECT_EQ(254, state.emulator.registers().at(0x5));
+    EXPECT_EQ(6, state.emulator.registers().at(0x6));
+    EXPECT_EQ(0, state.emulator.registers().at(0xF)); // borrow
 }
 
 TEST(ChissemblerTests, SubtractImmediateFromRegister) {
@@ -309,7 +309,7 @@ TEST(ChissemblerTests, SubtractImmediateFromRegister) {
 sub 2 V5
 )";
     auto const machine_code = chissembler::assemble("stdin", source);
-    ASSERT_EQ(
+    EXPECT_EQ(
             machine_code,
             combine_instructions(
                 u16{ 0x652C },
@@ -319,7 +319,7 @@ sub 2 V5
 
     auto const state = execute(machine_code);
 
-    ASSERT_EQ(42, state.emulator.registers().at(0x5));
+    EXPECT_EQ(42, state.emulator.registers().at(0x5));
 }
 
 TEST(ChissemblerTests, SubtractImmediateFromRegisterWithUnderflow) {
@@ -327,7 +327,7 @@ TEST(ChissemblerTests, SubtractImmediateFromRegisterWithUnderflow) {
 sub 6 V5
 )";
     auto const machine_code = chissembler::assemble("stdin", source);
-    ASSERT_EQ(
+    EXPECT_EQ(
             machine_code,
             combine_instructions(
                 u16{ 0x6504 },
@@ -335,7 +335,7 @@ sub 6 V5
             )
     );
     auto const state = execute(machine_code);
-    ASSERT_EQ(0xFE, state.emulator.registers().at(0x5));
+    EXPECT_EQ(0xFE, state.emulator.registers().at(0x5));
 }
 
 TEST(ChissemblerTests, BitwiseAnd) {
