@@ -225,7 +225,7 @@ TEST(ChissemblerTests, AddRegisterToRegister) {
             auto const rhs = random.u8_();
             auto const source = std::format(
                     R"(copy {} {}
-copy{} {}
+copy {} {}
 add {} {}
 )",
                     lhs,
@@ -246,12 +246,6 @@ add {} {}
                     )
             );
 
-            DEBUG_LOG(source_register_name);
-            DEBUG_LOG(destination_register_name);
-            DEBUG_LOG(static_cast<int>(lhs));
-            DEBUG_LOG(static_cast<int>(rhs));
-            DEBUG_LOG(static_cast<int>(static_cast<u8>(lhs + rhs)));
-
             auto const state = execute(machine_code);
 
             auto const sum = (source_register == destination_register ? 2 * rhs : lhs + rhs);
@@ -264,4 +258,84 @@ add {} {}
             ASSERT_EQ(state.emulator.registers().at(0xF), static_cast<u8>(carry));
         }
     }
+}
+
+TEST(ChissemblerTests, SubtractRegisterFromRegister) {
+    static constexpr auto source = R"(copy 44 V5
+copy 2 V6
+sub V6 V5
+)";
+    auto const machine_code = chissembler::assemble("stdin", source);
+    ASSERT_EQ(
+            machine_code,
+            combine_instructions(
+                u16{ 0x652C },
+                u16{ 0x6602 },
+                u16{ 0x8565 }
+            )
+    );
+
+    auto const state = execute(machine_code);
+
+    ASSERT_EQ(42, state.emulator.registers().at(0x5));
+    ASSERT_EQ(2, state.emulator.registers().at(0x6));
+    ASSERT_EQ(1, state.emulator.registers().at(0xF)); // no borrow
+}
+
+TEST(ChissemblerTests, SubtractRegisterFromRegisterWithBorrow) {
+    static constexpr auto source = R"(copy 4 V5
+copy 6 V6
+sub V6 V5
+)";
+    auto const machine_code = chissembler::assemble("stdin", source);
+    ASSERT_EQ(
+            machine_code,
+            combine_instructions(
+                u16{ 0x6504 },
+                u16{ 0x6606 },
+                u16{ 0x8565 }
+            )
+    );
+
+    auto const state = execute(machine_code);
+
+    ASSERT_EQ(254, state.emulator.registers().at(0x5));
+    ASSERT_EQ(6, state.emulator.registers().at(0x6));
+    ASSERT_EQ(0, state.emulator.registers().at(0xF)); // borrow
+}
+
+TEST(ChissemblerTests, SubtractImmediateFromRegister) {
+    static constexpr auto source = R"(copy 44 V5
+sub 2 V5
+)";
+    auto const machine_code = chissembler::assemble("stdin", source);
+    ASSERT_EQ(
+            machine_code,
+            combine_instructions(
+                u16{ 0x652C },
+                u16{ 0x75FE }
+            )
+    );
+
+    auto const state = execute(machine_code);
+
+    ASSERT_EQ(42, state.emulator.registers().at(0x5));
+}
+
+TEST(ChissemblerTests, SubtractImmediateFromRegisterWithUnderflow) {
+    static constexpr auto source = R"(copy 4 V5
+sub 6 V5
+)";
+    auto const machine_code = chissembler::assemble("stdin", source);
+    ASSERT_EQ(
+            machine_code,
+            combine_instructions(
+                u16{ 0x6504 },
+                u16{ 0x75FA }
+            )
+    );
+
+    auto const state = execute(machine_code);
+
+    ASSERT_EQ(0xFE, state.emulator.registers().at(0x5));
 }

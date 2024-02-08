@@ -73,6 +73,10 @@
                 tokens.emplace_back(TokenType::Add, source_location);
                 continue;
             }
+            if (lexeme == "sub") {
+                tokens.emplace_back(TokenType::Sub, source_location);
+                continue;
+            }
             if (lexeme == "jump") {
                 tokens.emplace_back(TokenType::Jump, source_location);
                 continue;
