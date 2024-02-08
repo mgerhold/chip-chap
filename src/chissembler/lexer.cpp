@@ -77,6 +77,10 @@
                 tokens.emplace_back(TokenType::Sub, source_location);
                 continue;
             }
+            if (lexeme == "and") {
+                tokens.emplace_back(TokenType::And, source_location);
+                continue;
+            }
             if (lexeme == "jump") {
                 tokens.emplace_back(TokenType::Jump, source_location);
                 continue;

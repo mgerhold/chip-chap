@@ -63,6 +63,14 @@
                 instructions.push_back(std::make_unique<instruction::Sub>(source, destination));
                 break;
             }
+            case TokenType::And: {
+                advance();
+                auto const source = write_target(); // immediates are not allowed as sources
+                auto const destination = write_target();
+                expect(TokenType::Newline);
+                instructions.push_back(std::make_unique<instruction::And>(source, destination));
+                break;
+            }
             case TokenType::Jump: {
                 advance();
                 auto target = jump_target();

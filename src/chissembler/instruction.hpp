@@ -71,4 +71,14 @@ namespace instruction {
         void append(EmitterState& state) const override;
     };
 
+    class And final : public BasicInstruction {
+    private:
+        Target m_source;
+        Target m_destination;
+
+    public:
+        And(Target const source, Target const destination) : m_source{ source }, m_destination{ destination } { }
+        void append(EmitterState& state) const override;
+    };
+
 } // namespace instruction

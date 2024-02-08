@@ -7,6 +7,7 @@ enum class TokenType {
     Copy,
     Add,
     Sub,
+    And,
     Colon,
     Jump,
     Plus,

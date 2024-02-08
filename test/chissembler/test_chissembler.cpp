@@ -334,8 +334,25 @@ sub 6 V5
                 u16{ 0x75FA }
             )
     );
-
     auto const state = execute(machine_code);
-
     ASSERT_EQ(0xFE, state.emulator.registers().at(0x5));
+}
+
+TEST(ChissemblerTests, BitwiseAnd) {
+    static constexpr auto source = R"(copy 10 V5
+copy 6 V6
+and V5 V6
+)";
+    auto const machine_code = chissembler::assemble("stdin", source);
+    EXPECT_EQ(
+            machine_code,
+            combine_instructions(
+                u16{ 0x650A },
+                u16{ 0x6606 },
+                u16{ 0x8652 }
+            )
+    );
+    auto const state = execute(machine_code);
+    EXPECT_EQ(0x2, state.emulator.registers().at(0x6));
+    EXPECT_EQ(0xA, state.emulator.registers().at(0x5));
 }
